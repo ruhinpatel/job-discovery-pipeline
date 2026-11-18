@@ -1,0 +1,64 @@
+# SYNTHETIC-FIXTURES-ONLY DEMO. This workflow runs over committed synthetic
+# fixtures in data/raw/ and makes NO network calls to any job site. It exists
+# to demonstrate the scheduling/orchestration architecture only: one scheduled
+# discovery job per source, a merge/queue stage, and a human-review gate.
+# (The private production system scrapes live sources; this public repo does not.)
+name: pipeline-demo
+
+on:
+  schedule:
+    - cron: "0 13 * * *"   # daily, 13:00 UTC
+  workflow_dispatch:
+
+env:
+  PYTHONPATH: src
+
+jobs:
+  ingest:
+    # One leg per source, mirroring "one scheduled discovery job per source".
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        source: [linkedin_alerts, job_boards, github_lists, company_careers]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install -r requirements.txt
+      - name: Run one adapter over its synthetic fixture
+        env:
+          SOURCE: ${{ matrix.source }}
+        run: |
+          python - <<'PY'
+          import os
+          from pipeline.adapters.ingest import ALL_ADAPTERS
+          name = os.environ["SOURCE"]
+          adapter = next(c() for c in ALL_ADAPTERS if c.source_name == name)
+          print(f"{name} (synthetic fixture): {len(adapter.run())} normalized postings")
+          PY
+
+  queue:
+    needs: ingest
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install -r requirements.txt
+      - name: Ingest all adapters (synthetic)
+        run: python src/pipeline/adapters/ingest.py
+      - name: Build ranked queue
+        run: python src/pipeline/candidate_queue.py | tee queue.txt
+      - name: Regenerate dashboard export
+        run: python src/pipeline/export_demo.py
+      - uses: actions/upload-artifact@v4
+        with:
+          name: pipeline-demo-output
+          path: |
+            docs/demo_data.js
+            queue.txt
+      - name: Human review gate (intentional stop point)
+        run: python scripts/review_gate.py

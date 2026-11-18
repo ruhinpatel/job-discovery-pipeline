@@ -5,10 +5,17 @@ This is the merge step that feeds the existing dedup -> score -> rank flow
 concatenation is all that is needed here; duplicate postings across sources
 (same role, different URL) are the ledger's job downstream, not this layer's.
 Output is a candidate list for human review.
+
+`data/postings.csv` (the master set the queue scores) is a GENERATED snapshot
+of this merged adapter output, written by `build_postings()` /
+`python src/pipeline/adapters/ingest.py --write`. It is not hand-maintained:
+edit the raw fixtures in `data/raw/` and regenerate, so the adapters are the
+single origin of the demo data and every downstream count reconciles to them.
 """
 
 from __future__ import annotations
 
+import csv
 import sys
 from pathlib import Path
 
@@ -16,7 +23,7 @@ if __name__ == "__main__":
     # Direct script run puts src/pipeline/adapters/ on sys.path, not src/.
     sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
-from pipeline.adapters.base import SourceAdapter
+from pipeline.adapters.base import CANONICAL_KEYS, SourceAdapter
 from pipeline.adapters.company_careers import CompanyCareersAdapter
 from pipeline.adapters.github_lists import GithubListsAdapter
 from pipeline.adapters.job_boards import JobBoardsAdapter
@@ -38,6 +45,28 @@ def run_all_adapters(raw_dir: Path | None = None) -> list[dict]:
     return postings
 
 
+DEFAULT_POSTINGS_PATH = Path(__file__).resolve().parents[3] / "data" / "postings.csv"
+
+
+def build_postings(raw_dir: Path | None = None, out_path: Path | None = None) -> list[dict]:
+    """Write the merged adapter output as the master `postings.csv` and return it.
+
+    Row order is deterministic: adapter order from ALL_ADAPTERS, each adapter's
+    own record order preserved. Line endings are fixed to LF so regenerating on
+    any OS yields a byte-identical file. Deduplication is deliberately NOT done
+    here: the master keeps reposts so the queue's ledger/dedup step has real
+    work to show.
+    """
+    postings = run_all_adapters(raw_dir)
+    out_path = Path(out_path) if out_path else DEFAULT_POSTINGS_PATH
+    out_path.parent.mkdir(parents=True, exist_ok=True)
+    with open(out_path, "w", newline="", encoding="utf-8") as f:
+        w = csv.DictWriter(f, fieldnames=CANONICAL_KEYS, lineterminator="\n")
+        w.writeheader()
+        w.writerows(postings)
+    return postings
+
+
 def main() -> None:
     total = 0
     for cls in ALL_ADAPTERS:
@@ -46,6 +75,9 @@ def main() -> None:
         total += n
         print(f"{adapter.source_name}: {n}")
     print(f"total: {total}")
+    if "--write" in sys.argv[1:]:
+        build_postings()
+        print(f"wrote {DEFAULT_POSTINGS_PATH}")
 
 
 if __name__ == "__main__":

@@ -1,31 +1,31 @@
 company,title,url,description,min_years_experience
-Acme Robotics,Software Engineer New Grad 2027,https://jobs.example.test/acme/1001,"Entry-level engineer to build REST APIs in Python. Git-based workflow, pair with senior engineers.",0
-Acme Robotics,Software Engineer - New Grad,https://mirror.example.test/view/778812,"Entry-level engineer to build REST APIs in Python. Git-based workflow, pair with senior engineers.",0
-Northwind Data,Data Engineer,https://jobs.example.test/northwind/42,"Own our SQL-based warehouse pipelines. Requires 3+ years building and tuning Spark/Airflow jobs.",3
-Globex Labs,Machine Learning Engineer,https://jobs.example.test/globex/ml-7,"Build and ship ML training pipelines in Python and PyTorch for a recommendation system.",0
-Initech Systems,Backend Engineer,https://jobs.example.test/initech/be-3,"Design distributed systems in Go, deployed on Kubernetes and AWS. CI/CD ownership expected.",1
-Lumen Logistics,Backend Engineer New Grad 2026,https://jobs.lumen-logistics.example.test/2201,"Build REST APIs in Python and Go for our shipment tracking platform. Services run on Kubernetes in AWS. Git-based code review, pair with senior engineers.",0
-Lumen Logistics,Backend Engineer - New Grad,https://mirror.example.test/view/551204,"Build REST APIs in Python and Go for our shipment tracking platform. Services run on Kubernetes in AWS. Git-based code review, pair with senior engineers.",0
-Quill Analytics,Data Engineer 2027,https://jobs.quill-analytics.example.test/roles/31,"Build batch ETL pipelines in SQL and Python for our reporting warehouse. Jobs scheduled in Airflow, data lineage documented for analysts.",0
-Quill Analytics,Data Engineer - New College Grad,https://quill.example.test/careers/data-eng-entry,"Build batch ETL pipelines in SQL and Python for our reporting warehouse. Jobs scheduled in Airflow, data lineage documented for analysts.",0
-Helix Cloud,Platform Engineer New Grad 2026,https://careers.helix-cloud.example.test/p/5510,"Run the internal developer platform in Go on Kubernetes. Build REST APIs for service provisioning. Distributed systems work across AWS regions.",0
-Helix Cloud,Platform Engineer - 2026 New Grad,https://helix-jobs.example.test/listing/88,"Run the internal developer platform in Go on Kubernetes. Build REST APIs for service provisioning. Distributed systems work across AWS regions.",0
-Cobalt Freight,Software Engineer I,https://jobs.cobalt-freight.example.test/req/4410,"Python and Go services behind REST APIs, deployed to Kubernetes on AWS. Distributed systems experience a plus. Git-based workflow.",1
-Vantage Peak,Backend Engineer,https://vantagepeak.example.test/jobs/backend-2,"Own backend services in Go and Python with SQL-backed storage. Git workflow, rotating on-call on AWS.",1
-Orbit Payments,Software Engineer Associate,https://orbit-payments.example.test/careers/sea-7,"Associate engineer on payment APIs in Python and SQL. Git code reviews, services hosted on AWS.",0
-Tessellate AI,Software Engineer - Applied ML Platform,https://tessellate.example.test/j/9921,"Build REST APIs in Python that serve model predictions. Containers run on Kubernetes in AWS. Distributed systems for batch inference, Git workflow.",0
-Marlin Systems,Infrastructure Engineer,https://marlin-systems.example.test/roles/inf-12,"Keep Kubernetes clusters on AWS running. Write Python automation and Go tooling for capacity planning.",0
-Driftwood Retail,Senior Backend Engineer,https://driftwood.example.test/job/sr-be,"Lead backend engineering for our payments platform in Go. Mentor engineers, own the roadmap. Five plus years building distributed systems required.",5
-Ember Lending,Senior Software Engineer,https://ember-lending.example.test/careers/sse-02,"Own the core lending ledger service in Java and Oracle. Six or more years of experience with high-volume transactional systems required.",6
-Northbeam Energy,Field Electrical Technician,https://northbeam.example.test/jobs/tech-2,"Install and maintain electrical panels and wind turbine controls on site. Certification and a valid driver license required.",0
-Juniper Dental Group,Clinical Scheduling Coordinator,https://careers.juniper-dental.example.test/coord-9,"Manage appointment calendars and insurance pre-authorization for four dental offices. Front desk experience preferred.",0
-Sable Robotics,Machine Learning Engineer,https://sable-robotics.example.test/jobs/mle-4,"Train and evaluate computer vision models in PyTorch. Build Python data pipelines on AWS for labeled image sets.",0
-Kestrel Analytics,Machine Learning Engineer II,https://kestrel.example.test/postings/mle2-118,"Ship LLM fine-tuning and evaluation pipelines in Python on AWS. Deploy inference services on Kubernetes with REST APIs around the models. Git-based review.",2
-Argent Data,Applied Scientist,https://argent-data.example.test/careers/as-3,"Research ranking models with statistical methods, prototyped in Python. PhD preferred, publication record a plus.",3
-Corvid Data,Data Engineer,https://corvid-data.example.test/jobs/de-22,"Own streaming and batch ETL in SQL and Python. Airflow DAGs, workers on Kubernetes, raw data in an AWS S3 lake.",1
-Pilgrim Foods,Data Engineer,https://pilgrimfoods.example.test/roles/de-senior,"Spark and Airflow jobs on our on-prem cluster. Four or more years building warehouse pipelines required. SQL modeling a must.",4
-Ridgeline Staffing,Software Engineer Contract,https://ridgeline-staffing.example.test/req/7,"Contract software engineer placed through our staffing firm. Python and SQL reporting tools, hourly rate. Client conversion possible.",0
-Harbor Trading Ops,Trading Desk Operations Analyst,https://harbor-trading.example.test/jobs/ops-5,"Monitor trade settlement queues and reconcile broker statements. Excel and Bloomberg terminal use daily.",0
-Pelican Games,Gameplay Engineer,https://pelican-games.example.test/jobs/gp-40,"Write gameplay systems in C++ and Unreal Engine for a multiplayer action title. Shader and physics tuning.",0
-Bramble Cloud,Site Reliability Engineer,https://bramble-cloud.example.test/jobs/sre-77,"Keep Kubernetes clusters on AWS healthy. Write Go and Python tooling for incident response. Strong distributed systems background.",1
-Fernleaf Compute,Backend Engineer,https://fernleaf.example.test/careers/be-204,"Build REST APIs in Go on Kubernetes. SQL-backed services on AWS, Git-based releases, distributed systems for job scheduling.",2
+Lumen Orbital,"Software Engineer, New Grad",https://alerts.example.test/lumen-orbital/301,"Build backend services in Python and Go. Design REST APIs, ship with Git and CI/CD on AWS. New graduates welcome.",0
+Harbor Analytics,Data Engineer,https://alerts.example.test/harbor/302,Own ETL pipelines on Airflow and Spark. 2+ years of experience preferred. SQL and Python required.,2
+Quill Systems,Machine Learning Engineer,https://alerts.example.test/quill/303,Train and deploy ranking models in Python with PyTorch. Requires 3 years of ML experience.,3
+Brightfield Labs,Platform Engineer,https://alerts.example.test/brightfield/304,"Kubernetes and CI/CD for internal developer tooling, on AWS with Go and Python.",4
+Vantage Ledger,Backend Engineer,https://alerts.example.test/vantage/305,Own payment REST APIs in Go and SQL on AWS. Distributed systems experience a plus. Git workflow.,1
+Harbor Analytics,Data Engineer,https://alerts.example.test/harbor/306,"Own ETL pipelines on Airflow and Spark in Python, SQL and AWS. 2+ years of experience preferred.",2
+Zephyr Freight,Principal Software Engineer,https://alerts.example.test/zephyr/307,Lead architecture for distributed systems in Go and Kubernetes. 10+ years of experience required.,10
+Cobalt Freight,Software Engineer I,https://alerts.example.test/cobalt-freight/308,Maintain routing services and REST APIs in Python. Entry-level role.,0
+Tidewater Software,Backend Engineer I,https://boards.example.test/tidewater/9001,"Design REST APIs in Python and Go on Postgres and AWS, deployed with Kubernetes and CI/CD. Git and SQL daily. Great for early-career engineers.",1
+Cobalt Retail,Analytics Engineer,https://boards.example.test/cobalt/9002,Model warehouse data with dbt and SQL. 4+ years of experience.,4
+Marlow Cloud,"Software Engineer, Infrastructure",https://boards.example.test/marlow/9003,"Operate Terraform, Kubernetes and AWS at scale with Python and Go. Distributed systems and CI/CD focus. Prior experience of 2 years helpful.",2
+Sable AI,ML Platform Engineer,https://boards.example.test/sable/9004,Build model serving and monitoring tooling in Python on Kubernetes and AWS.,0
+Tidewater Software,Backend Engineer I - 2027,https://boards.example.test/tidewater/9005,Design REST APIs in Java and Postgres. Great for early-career engineers.,1
+Ridgeway Pay,"Software Engineer, Payments",https://boards.example.test/ridgeway/9006,Build transaction services in Go and SQL with Git and REST APIs.,1
+Orchid Cloud,Staff Software Engineer,https://boards.example.test/orchid/9007,Drive multi-region distributed systems design on AWS and Kubernetes.,8
+Greenleaf Logistics,Warehouse Operations Coordinator,https://boards.example.test/greenleaf/9008,Coordinate dock schedules and inventory counts. 5 years of operations experience.,5
+Lumen Orbital,Software Engineer New Grad 2027,https://lists.example.test/lumen-orbital/new-grad,Entry-level Python services work. Sponsorship: Offers Sponsorship.,0
+Fernwood Games,Software Engineer New Grad 2027,https://lists.example.test/fernwood/new-grad,Entry-level C++ and Python engine tooling. Git and CI/CD pipelines. Sponsorship: Offers Sponsorship.,0
+Ironbark Data,Data Engineer I,https://lists.example.test/ironbark/de1,Pipelines on Kafka and Spark in Python and SQL. 1+ years preferred. Sponsorship: Unknown.,1
+Pinecrest Health,Backend Engineer,https://lists.example.test/pinecrest/be,Build FHIR integrations in Python with REST APIs and SQL. Minimum 3 years experience. Sponsorship: Does Not Offer Sponsorship.,3
+Kestrel Security,"Platform Engineer, New Grad",https://lists.example.test/kestrel/platform,Kubernetes and AWS tooling in Go. Git and CI/CD. 0-2 years of experience. Sponsorship: Offers Sponsorship.,0
+Acme Robotics,Software Engineer New Grad 2027,https://lists.example.test/acme/new-grad,Entry-level engineer to build REST APIs in Python. Sponsorship: Unknown.,0
+Corvid Data,Data Engineer,https://lists.example.test/corvid/de,Warehouse pipelines in Python and SQL. 2 years of experience. Sponsorship: Unknown.,2
+Northgate Robotics,"Software Engineer, Perception",https://careers.example.test/northgate/p-11,Team: Autonomy. Develop C++ perception services in Python and Go. Git and CI/CD practices. 0-2 years of experience; new graduates encouraged.,0
+Northgate Robotics,"Data Engineer, Telemetry",https://careers.example.test/northgate/p-12,"Team: Data Platform. Build streaming telemetry pipelines in Python, SQL and Spark. At least 3 years of experience.",3
+Northgate Robotics,Machine Learning Engineer,https://careers.example.test/northgate/p-13,"Team: Research. Productionize vision models with PyTorch and Docker. Python, Kubernetes and AWS for training infrastructure.",0
+Northgate Robotics,Software Engineer - Perception,https://careers.example.test/northgate/p-14,Team: Autonomy. Develop C++ perception services. 0-2 years of experience; new graduates encouraged.,0
+Northgate Robotics,"Software Engineer, Simulation",https://careers.example.test/northgate/p-15,Team: Simulation. Build simulation tooling in Python. 1 year of experience.,1
+Northgate Robotics,"Senior Software Engineer, Autonomy",https://careers.example.test/northgate/p-16,Team: Autonomy. Lead autonomy stack design across distributed systems on Kubernetes. 7+ years of experience.,7
+Northgate Robotics,Facilities Technician,https://careers.example.test/northgate/p-17,Team: Facilities. Maintain robotics lab hardware and safety equipment. 2 years of facilities experience.,2

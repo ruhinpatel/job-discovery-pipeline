@@ -1,6 +1,115 @@
-{"jobs": [
-  {"title": "Backend Engineer I", "company": {"name": "Tidewater Software"}, "absolute_url": "https://boards.example.test/tidewater/9001", "content": "Design REST APIs in Java and Postgres. Great for early-career engineers.", "metadata": [{"name": "yoe", "value": "1"}, {"name": "team", "value": "Core"}]},
-  {"title": "Analytics Engineer", "company": {"name": "Cobalt Retail"}, "absolute_url": "https://boards.example.test/cobalt/9002", "content": "Model warehouse data with dbt and SQL. 4+ years of experience.", "metadata": [{"name": "yoe", "value": "4"}]},
-  {"title": "Software Engineer, Infrastructure", "company": {"name": "Marlow Cloud"}, "absolute_url": "https://boards.example.test/marlow/9003", "content": "Operate Terraform and AWS at scale. Prior experience of 2 years helpful.", "metadata": []},
-  {"title": "ML Platform Engineer", "company": {"name": "Sable AI"}, "absolute_url": "https://boards.example.test/sable/9004", "content": "Build model serving and monitoring tooling in Python.", "metadata": [{"name": "yoe", "value": "n/a"}]}
-]}
+{
+  "jobs": [
+    {
+      "title": "Backend Engineer I",
+      "company": {
+        "name": "Tidewater Software"
+      },
+      "absolute_url": "https://boards.example.test/tidewater/9001",
+      "content": "Design REST APIs in Python and Go on Postgres and AWS, deployed with Kubernetes and CI/CD. Git and SQL daily. Great for early-career engineers.",
+      "metadata": [
+        {
+          "name": "yoe",
+          "value": "1"
+        },
+        {
+          "name": "team",
+          "value": "Core"
+        }
+      ]
+    },
+    {
+      "title": "Analytics Engineer",
+      "company": {
+        "name": "Cobalt Retail"
+      },
+      "absolute_url": "https://boards.example.test/cobalt/9002",
+      "content": "Model warehouse data with dbt and SQL. 4+ years of experience.",
+      "metadata": [
+        {
+          "name": "yoe",
+          "value": "4"
+        }
+      ]
+    },
+    {
+      "title": "Software Engineer, Infrastructure",
+      "company": {
+        "name": "Marlow Cloud"
+      },
+      "absolute_url": "https://boards.example.test/marlow/9003",
+      "content": "Operate Terraform, Kubernetes and AWS at scale with Python and Go. Distributed systems and CI/CD focus. Prior experience of 2 years helpful.",
+      "metadata": []
+    },
+    {
+      "title": "ML Platform Engineer",
+      "company": {
+        "name": "Sable AI"
+      },
+      "absolute_url": "https://boards.example.test/sable/9004",
+      "content": "Build model serving and monitoring tooling in Python on Kubernetes and AWS.",
+      "metadata": [
+        {
+          "name": "yoe",
+          "value": "n/a"
+        }
+      ]
+    },
+    {
+      "title": "Backend Engineer I - 2027",
+      "company": {
+        "name": "Tidewater Software"
+      },
+      "absolute_url": "https://boards.example.test/tidewater/9005",
+      "content": "Design REST APIs in Java and Postgres. Great for early-career engineers.",
+      "metadata": [
+        {
+          "name": "yoe",
+          "value": "1"
+        }
+      ]
+    },
+    {
+      "title": "Software Engineer, Payments",
+      "company": {
+        "name": "Ridgeway Pay"
+      },
+      "absolute_url": "https://boards.example.test/ridgeway/9006",
+      "content": "Build transaction services in Go and SQL with Git and REST APIs.",
+      "metadata": [
+        {
+          "name": "yoe",
+          "value": "1"
+        }
+      ]
+    },
+    {
+      "title": "Staff Software Engineer",
+      "company": {
+        "name": "Orchid Cloud"
+      },
+      "absolute_url": "https://boards.example.test/orchid/9007",
+      "content": "Drive multi-region distributed systems design on AWS and Kubernetes.",
+      "metadata": [
+        {
+          "name": "yoe",
+          "value": "8"
+        }
+      ]
+    },
+    {
+      "title": "Warehouse Operations Coordinator",
+      "company": {
+        "name": "Greenleaf Logistics"
+      },
+      "absolute_url": "https://boards.example.test/greenleaf/9008",
+      "content": "Coordinate dock schedules and inventory counts. 5 years of operations experience.",
+      "metadata": [
+        {
+          "name": "yoe",
+          "value": "5"
+        }
+      ]
+    }
+  ]
+}

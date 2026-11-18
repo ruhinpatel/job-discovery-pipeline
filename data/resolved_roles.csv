@@ -1,8 +1,7 @@
 fingerprint,company,title,status,resolved_date,url
-acme robotics|software engineer,Acme Robotics,Software Engineer New Grad 2027,reviewed,2026-01-05,https://jobs.example.test/acme/1001
-northwind data|data engineer,Northwind Data,Data Engineer,skipped,2026-01-07,https://jobs.example.test/northwind/42
-globex labs|machine learning engineer,Globex Labs,Machine Learning Engineer,skipped,2026-01-09,https://jobs.example.test/globex/ml-7
 cobalt freight|software engineer i,Cobalt Freight,Software Engineer I,applied,2026-01-12,https://jobs.cobalt-freight.example.test/req/4410
-tessellate ai|software engineer applied ml platform,Tessellate AI,Software Engineer - Applied ML Platform,skipped,2026-01-13,https://tessellate.example.test/j/9921
-sable robotics|machine learning engineer,Sable Robotics,Machine Learning Engineer,skipped,2026-01-14,https://sable-robotics.example.test/jobs/mle-4
+ridgeway pay|software engineer payments,Ridgeway Pay,"Software Engineer, Payments",applied,2026-01-14,https://ridgeway.example.test/careers/sep-2
+cobalt retail|analytics engineer,Cobalt Retail,Analytics Engineer,skipped,2026-01-07,https://cobalt-retail.example.test/jobs/ae-3
+acme robotics|software engineer,Acme Robotics,Software Engineer New Grad 2027,reviewed,2026-01-05,https://jobs.example.test/acme/1001
 corvid data|data engineer,Corvid Data,Data Engineer,reviewed,2026-01-15,https://corvid-data.example.test/jobs/de-22
+northgate robotics|software engineer simulation,Northgate Robotics,"Software Engineer, Simulation",skipped,2026-01-16,https://careers.example.test/northgate/sim-old

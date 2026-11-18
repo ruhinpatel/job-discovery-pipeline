@@ -1,4 +1,8 @@
 company,role,application_link,notes,sponsorship
-Fernwood Games,Software Engineer New Grad 2027,https://lists.example.test/fernwood/new-grad,Entry-level C++ and Python engine tooling.,Offers Sponsorship
-Ironbark Data,Data Engineer I,https://lists.example.test/ironbark/de1,Pipelines on Kafka and Spark. 1+ years preferred.,Unknown
-Pinecrest Health,Backend Engineer,https://lists.example.test/pinecrest/be,Build FHIR integrations in Python. Minimum 3 years experience.,Does Not Offer Sponsorship
+Lumen Orbital,Software Engineer New Grad 2027,https://lists.example.test/lumen-orbital/new-grad,Entry-level Python services work.,Offers Sponsorship
+Fernwood Games,Software Engineer New Grad 2027,https://lists.example.test/fernwood/new-grad,Entry-level C++ and Python engine tooling. Git and CI/CD pipelines.,Offers Sponsorship
+Ironbark Data,Data Engineer I,https://lists.example.test/ironbark/de1,Pipelines on Kafka and Spark in Python and SQL. 1+ years preferred.,Unknown
+Pinecrest Health,Backend Engineer,https://lists.example.test/pinecrest/be,Build FHIR integrations in Python with REST APIs and SQL. Minimum 3 years experience.,Does Not Offer Sponsorship
+Kestrel Security,"Platform Engineer, New Grad",https://lists.example.test/kestrel/platform,Kubernetes and AWS tooling in Go. Git and CI/CD. 0-2 years of experience.,Offers Sponsorship
+Acme Robotics,Software Engineer New Grad 2027,https://lists.example.test/acme/new-grad,Entry-level engineer to build REST APIs in Python.,Unknown
+Corvid Data,Data Engineer,https://lists.example.test/corvid/de,Warehouse pipelines in Python and SQL. 2 years of experience.,Unknown

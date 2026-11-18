@@ -1,12 +1,19 @@
+from collections import Counter
+from pathlib import Path
+
 import pytest
 
 from pipeline.adapters.base import CANONICAL_KEYS, SourceAdapter, parse_min_years
 from pipeline.adapters.company_careers import CompanyCareersAdapter
 from pipeline.adapters.github_lists import GithubListsAdapter
-from pipeline.adapters.ingest import ALL_ADAPTERS, run_all_adapters
+from pipeline.adapters.ingest import ALL_ADAPTERS, build_postings, run_all_adapters
 from pipeline.adapters.job_boards import JobBoardsAdapter
 from pipeline.adapters.linkedin_alerts import LinkedInAlertsAdapter
 
+from pipeline.ledger import fingerprint, load_resolved_fingerprints
+from pipeline.scorer import load_postings
+
+MASTER = Path(__file__).parent.parent / "data" / "postings.csv"
 ADAPTERS = [LinkedInAlertsAdapter, JobBoardsAdapter, GithubListsAdapter, CompanyCareersAdapter]
 
 
@@ -27,6 +34,12 @@ def test_fetch_raw_nonempty_and_output_is_canonical(cls):
             assert isinstance(row[key], str) and row[key]
         assert isinstance(row["min_years_experience"], int)
         assert row["min_years_experience"] >= 0
+
+
+@pytest.mark.parametrize("cls,expected", [(LinkedInAlertsAdapter, 8), (JobBoardsAdapter, 8),
+                                           (GithubListsAdapter, 7), (CompanyCareersAdapter, 7)])
+def test_per_source_counts(cls, expected):
+    assert len(cls().run()) == expected
 
 
 def test_parse_min_years_takes_floor():
@@ -68,6 +81,36 @@ def test_company_careers_company_and_years():
     assert _by_title(rows, "Machine Learning Engineer")["min_years_experience"] == 0
     # "0-2 years" -> floor of the range
     assert _by_title(rows, "Software Engineer, Perception")["min_years_experience"] == 0
+
+
+def test_master_postings_is_exactly_the_adapter_output():
+    """data/postings.csv is a generated snapshot: it must equal the merged adapters."""
+    master = load_postings(MASTER)
+    merged = run_all_adapters()
+    assert len(master) == len(merged)
+    assert (Counter(fingerprint(r["company"], r["title"]) for r in master)
+            == Counter(fingerprint(r["company"], r["title"]) for r in merged))
+    assert [{**r, "min_years_experience": int(r["min_years_experience"])} for r in master] == merged
+
+
+def test_build_postings_writes_canonical_deterministic_csv(tmp_path):
+    out = tmp_path / "postings.csv"
+    rows = build_postings(out_path=out)
+    first = out.read_bytes()
+    assert first.decode("utf-8").splitlines()[0] == ",".join(CANONICAL_KEYS)
+    assert b"\r" not in first
+    assert rows == run_all_adapters()
+    build_postings(out_path=out)
+    assert out.read_bytes() == first
+
+
+def test_demo_data_has_crosssource_repost_and_ledger_hits():
+    by_fp = {}
+    for cls in ALL_ADAPTERS:
+        for r in cls().run():
+            by_fp.setdefault(fingerprint(r["company"], r["title"]), set()).add(cls.source_name)
+    assert any(len(srcs) > 1 for srcs in by_fp.values())
+    assert len(load_resolved_fingerprints(MASTER.parent / "resolved_roles.csv") & set(by_fp)) >= 1
 
 
 def test_run_all_adapters_sums_sources():
