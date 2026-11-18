@@ -12,14 +12,14 @@ flowchart LR
     B --> C[Dedup ledger<br/>IMPLEMENTED]
     C --> D[Fit-scoring + routing<br/>IMPLEMENTED]
     D --> E[Ranked queue<br/>IMPLEMENTED]
-    E --> F[Human review<br/>planned]
+    E --> F[Human review gate<br/>IMPLEMENTED]
 
     style C fill:#c8e6c9,stroke:#2e7d32,stroke-width:2px
     style D fill:#c8e6c9,stroke:#2e7d32,stroke-width:2px
     style E fill:#c8e6c9,stroke:#2e7d32,stroke-width:2px
     style A fill:#c8e6c9,stroke:#2e7d32,stroke-width:2px
     style B fill:#c8e6c9,stroke:#2e7d32,stroke-width:2px
-    style F fill:#eeeeee,stroke:#9e9e9e,stroke-dasharray: 5 5
+    style F fill:#c8e6c9,stroke:#2e7d32,stroke-width:2px
 ```
 
 ### Implemented: source adapters (sources + normalization)
