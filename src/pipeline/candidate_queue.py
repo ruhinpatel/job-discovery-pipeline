@@ -1,7 +1,8 @@
 """Candidate queue.
 
 Ties the dedup ledger and the fit scorer into one flow: drop postings whose
-role is already resolved, score the survivors, and rank them. The pipeline
+role is already resolved, score the survivors, collapse in-batch reposts of
+the same role to the best-scoring row, and rank them. The pipeline
 only orders the work; a person reads the queue and decides what to do with
 each row. The suppressed count is reported alongside the queue so a reviewer
 can see how much repeat work the ledger removed.
@@ -32,17 +33,23 @@ def build_queue(
     profile_path: Path = DEFAULT_PROFILE_PATH,
     ledger_path: Path = DEFAULT_LEDGER_PATH,
 ) -> dict:
-    """Return {"total", "suppressed_count", "queue", "suppressed"}.
+    """Return {"total", "suppressed_count", "duplicate_count", "queue",
+    "suppressed", "duplicates"}.
 
-    `queue` holds scored survivors, highest score first, each with its
-    fingerprint and status="kept". `suppressed` holds the postings the ledger
-    removed (unscored, status="suppressed"), so the dedup is auditable.
+    Two distinct removals, kept separate so each is auditable:
+    - `suppressed`: postings whose fingerprint is already in the resolved
+      ledger (unscored, status="suppressed").
+    - `duplicates`: unresolved reposts of a role already in this batch (same
+      fingerprint, different URL). Only the highest-scoring row per
+      fingerprint stays in `queue`; ties keep the first in input order.
+    `queue` holds the deduped, scored survivors, highest score first, each
+    with its fingerprint and status="kept".
     """
     postings = load_postings(postings_path)
     profile = load_profile(profile_path)
     resolved = load_resolved_fingerprints(ledger_path)
 
-    queue: list[dict] = []
+    scored: list[dict] = []
     suppressed: list[dict] = []
     for p in postings:
         fp = fingerprint(p.get("company", ""), p.get("title", ""))
@@ -51,16 +58,28 @@ def build_queue(
                                "url": p.get("url", ""), "fingerprint": fp,
                                "status": "suppressed"})
         else:
-            queue.append({**score_posting(p, profile), "fingerprint": fp, "status": "kept"})
+            scored.append({**score_posting(p, profile), "fingerprint": fp, "status": "kept"})
+
+    # Within-batch dedup: strictly-greater comparison keeps the first row on ties.
+    best: dict[str, dict] = {}
+    for row in scored:
+        cur = best.get(row["fingerprint"])
+        if cur is None or row["score"] > cur["score"]:
+            best[row["fingerprint"]] = row
+    queue = [r for r in scored if best[r["fingerprint"]] is r]
+    duplicates = [{"company": r["company"], "title": r["title"], "url": r["url"],
+                   "fingerprint": r["fingerprint"], "status": "duplicate"}
+                  for r in scored if best[r["fingerprint"]] is not r]
 
     queue.sort(key=lambda r: r["score"], reverse=True)
     return {"total": len(postings), "suppressed_count": len(suppressed),
-            "queue": queue, "suppressed": suppressed}
+            "duplicate_count": len(duplicates), "queue": queue,
+            "suppressed": suppressed, "duplicates": duplicates}
 
 
 def format_queue(result: dict) -> str:
-    lines = [f"{result['total']} postings | {result['suppressed_count']} suppressed as "
-             f"already-resolved | {len(result['queue'])} in queue", ""]
+    lines = [f"{result['total']} postings | {result['suppressed_count']} resolved-suppressed | "
+             f"{result['duplicate_count']} in-batch duplicates | {len(result['queue'])} in queue", ""]
     if result["queue"]:
         lines.append(f"{'#':>2}  {'Score':>5}  {'Company':<18} {'Title':<30} Matched skills")
         for i, r in enumerate(result["queue"], 1):

@@ -1,0 +1,6 @@
+company,title,url,description,min_years_experience
+Acme Robotics,Software Engineer New Grad 2027,https://jobs.example.test/acme/1001,"Entry-level engineer to build REST APIs in Python. Git-based workflow, pair with senior engineers.",0
+Acme Robotics,Software Engineer - New Grad,https://mirror.example.test/view/778812,"Entry-level engineer to build REST APIs in Python. Git-based workflow, pair with senior engineers.",0
+Northwind Data,Data Engineer,https://jobs.example.test/northwind/42,"Own our SQL-based warehouse pipelines. Requires 3+ years building and tuning Spark/Airflow jobs.",3
+Globex Labs,Machine Learning Engineer,https://jobs.example.test/globex/ml-7,"Build and ship ML training pipelines in Python and PyTorch for a recommendation system.",0
+Initech Systems,Backend Engineer,https://jobs.example.test/initech/be-3,"Design distributed systems in Go, deployed on Kubernetes and AWS. CI/CD ownership expected.",1

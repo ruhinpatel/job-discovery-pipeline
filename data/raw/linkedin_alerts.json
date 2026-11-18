@@ -1,0 +1,6 @@
+[
+  {"jobTitle": "Software Engineer, New Grad", "companyName": "Lumen Orbital", "link": "https://alerts.example.test/lumen-orbital/301", "snippet": "Build backend services in Python and Go. New graduates welcome.", "seniority": "Entry level"},
+  {"jobTitle": "Data Engineer", "companyName": "Harbor Analytics", "link": "https://alerts.example.test/harbor/302", "snippet": "Own ETL pipelines on Airflow and Spark. 2+ years of experience preferred.", "seniority": "Associate"},
+  {"jobTitle": "Machine Learning Engineer", "companyName": "Quill Systems", "link": "https://alerts.example.test/quill/303", "snippet": "Train and deploy ranking models with PyTorch. Requires 3 years of ML experience.", "seniority": "Mid-Senior level"},
+  {"jobTitle": "Platform Engineer", "companyName": "Brightfield Labs", "link": "https://alerts.example.test/brightfield/304", "snippet": "Kubernetes and CI/CD for internal developer tooling.", "seniority": "Mid-Senior level"}
+]

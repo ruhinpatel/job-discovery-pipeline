@@ -59,3 +59,10 @@ def test_score_all_sorts_descending():
     scores = [r["score"] for r in ranked]
     assert scores == sorted(scores, reverse=True)
     assert len(ranked) == len(postings)
+
+
+def test_ci_cd_skill_matches_despite_slash():
+    profile = load_profile(PROFILE)
+    posting = {"company": "X", "title": "Engineer",
+               "description": "You will own our CI/CD pipeline.", "min_years_experience": "0"}
+    assert "CI/CD" in score_posting(posting, profile)["matched_skills"]

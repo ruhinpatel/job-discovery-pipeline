@@ -12,7 +12,8 @@ from pipeline.ledger import (
     upsert_resolved_role,
 )
 
-FIXTURE = Path(__file__).parent.parent / "data" / "resolved_roles.csv"
+# Frozen 3-row fixture: independent of the growing demo data in data/.
+FIXTURE = Path(__file__).parent / "fixtures" / "resolved_roles.csv"
 
 
 @pytest.fixture

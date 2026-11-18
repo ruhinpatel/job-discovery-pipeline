@@ -1,0 +1,6 @@
+{"jobs": [
+  {"title": "Backend Engineer I", "company": {"name": "Tidewater Software"}, "absolute_url": "https://boards.example.test/tidewater/9001", "content": "Design REST APIs in Java and Postgres. Great for early-career engineers.", "metadata": [{"name": "yoe", "value": "1"}, {"name": "team", "value": "Core"}]},
+  {"title": "Analytics Engineer", "company": {"name": "Cobalt Retail"}, "absolute_url": "https://boards.example.test/cobalt/9002", "content": "Model warehouse data with dbt and SQL. 4+ years of experience.", "metadata": [{"name": "yoe", "value": "4"}]},
+  {"title": "Software Engineer, Infrastructure", "company": {"name": "Marlow Cloud"}, "absolute_url": "https://boards.example.test/marlow/9003", "content": "Operate Terraform and AWS at scale. Prior experience of 2 years helpful.", "metadata": []},
+  {"title": "ML Platform Engineer", "company": {"name": "Sable AI"}, "absolute_url": "https://boards.example.test/sable/9004", "content": "Build model serving and monitoring tooling in Python.", "metadata": [{"name": "yoe", "value": "n/a"}]}
+]}

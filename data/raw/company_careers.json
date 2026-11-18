@@ -1,0 +1,5 @@
+{"company": "Northgate Robotics", "postings": [
+  {"name": "Software Engineer, Perception", "categories": {"team": "Autonomy"}, "hostedUrl": "https://careers.example.test/northgate/p-11", "descriptionPlain": "Develop C++ perception services. 0-2 years of experience; new graduates encouraged."},
+  {"name": "Data Engineer, Telemetry", "categories": {"team": "Data Platform"}, "hostedUrl": "https://careers.example.test/northgate/p-12", "descriptionPlain": "Build streaming telemetry pipelines in Python and Spark. At least 3 years of experience."},
+  {"name": "Machine Learning Engineer", "categories": {"team": "Research"}, "hostedUrl": "https://careers.example.test/northgate/p-13", "descriptionPlain": "Productionize vision models with PyTorch and Docker."}
+]}

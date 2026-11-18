@@ -39,13 +39,14 @@ def load_postings(path: Path = DEFAULT_POSTINGS_PATH) -> list[dict[str, str]]:
 
 def _skills_overlap(description: str, skills: list[str]) -> tuple[float, list[str]]:
     """Fraction of the profile's skills that appear as whole words in the
-    description (case-insensitive). Multi-word skills match as substrings."""
+    description (case-insensitive). Skills containing a space, "+" or "/" (e.g. "CI/CD", which the word
+    tokenizer would split apart) match as substrings."""
     text = description.lower()
     words = set(_WORD_RE.findall(text))
     matched = []
     for skill in skills:
         skill_l = skill.lower()
-        if " " in skill_l or "+" in skill_l:
+        if " " in skill_l or "+" in skill_l or "/" in skill_l:
             hit = skill_l in text
         else:
             hit = skill_l in words

@@ -8,7 +8,7 @@ A pipeline that collects job postings from multiple sources, normalizes them, re
 
 ```mermaid
 flowchart LR
-    A[Sources<br/>planned] --> B[Normalization<br/>planned]
+    A[Sources<br/>IMPLEMENTED] --> B[Normalization<br/>IMPLEMENTED]
     B --> C[Dedup ledger<br/>IMPLEMENTED]
     C --> D[Fit-scoring + routing<br/>IMPLEMENTED]
     D --> E[Ranked queue<br/>IMPLEMENTED]
@@ -17,9 +17,17 @@ flowchart LR
     style C fill:#c8e6c9,stroke:#2e7d32,stroke-width:2px
     style D fill:#c8e6c9,stroke:#2e7d32,stroke-width:2px
     style E fill:#c8e6c9,stroke:#2e7d32,stroke-width:2px
-    style A fill:#eeeeee,stroke:#9e9e9e,stroke-dasharray: 5 5
-    style B fill:#eeeeee,stroke:#9e9e9e,stroke-dasharray: 5 5
+    style A fill:#c8e6c9,stroke:#2e7d32,stroke-width:2px
+    style B fill:#c8e6c9,stroke:#2e7d32,stroke-width:2px
     style F fill:#eeeeee,stroke:#9e9e9e,stroke-dasharray: 5 5
+```
+
+### Implemented: source adapters (sources + normalization)
+
+`src/pipeline/adapters/` isolates each discovery source behind a small `SourceAdapter` subclass. There are four: `linkedin_alerts`, `job_boards`, `github_lists`, and `company_careers`. Each reads a committed synthetic raw fixture from `data/raw/`, and each fixture has a deliberately different shape (alert-digest JSON, ATS-board JSON, a curated-list CSV, a career-page JSON feed). Each adapter's `normalize` step maps its shape to one canonical posting schema (`company`, `title`, `url`, `description`, `min_years_experience`), including source-specific handling such as deriving a years-of-experience floor from free text or metadata. `ingest.run_all_adapters()` merges the four normalized outputs into one list, so everything downstream sees a single shape and adding a source means adding one adapter. In production `fetch_raw` would call live APIs or parse alert emails; here it reads fixtures only, so there are no network calls and no real postings.
+
+```
+python src/pipeline/adapters/ingest.py
 ```
 
 ### Implemented: dedup / resolved-roles ledger
@@ -34,13 +42,13 @@ flowchart LR
 
 ### Implemented: candidate queue
 
-`src/pipeline/candidate_queue.py` consumes the ledger and the scorer end to end: it loads postings, drops any whose fingerprint is already resolved, scores the survivors, and ranks them by fit. It returns the ranked queue together with the suppressed postings and their count, so a reviewer can see how much repeat work the ledger removed. The queue orders the work; a person still decides what to do with each row.
+`src/pipeline/candidate_queue.py` consumes the ledger and the scorer end to end: it loads postings, drops any whose fingerprint is already resolved, scores the survivors, and ranks them by fit. It also collapses within-batch duplicates: two unresolved reposts of the same role (same fingerprint, different URL) reduce to the single highest-scoring row, with ties keeping the first in input order. It returns the ranked queue together with the ledger-suppressed postings and the collapsed in-batch duplicates, each with its own count, so a reviewer can see how much repeat work was removed and why. The queue orders the work; a person still decides what to do with each row.
 
 ```
 python src/pipeline/candidate_queue.py
 ```
 
-In the demo data, 4 of 5 postings are suppressed (both reposted Acme URLs share one fingerprint, plus the already-resolved Northwind and Globex roles) and one remains in the queue.
+The output header reports postings, resolved-suppressed, in-batch duplicates, and the final queue size; those three figures always reconcile to the total. In the demo data, roles already in the ledger are suppressed and reposts of the same unresolved role appear once.
 
 Synthetic fixtures live in `data/`.
 

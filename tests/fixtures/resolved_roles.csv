@@ -1,0 +1,4 @@
+fingerprint,company,title,status,resolved_date,url
+acme robotics|software engineer,Acme Robotics,Software Engineer New Grad 2027,reviewed,2026-01-05,https://jobs.example.test/acme/1001
+northwind data|data engineer,Northwind Data,Data Engineer,skipped,2026-01-07,https://jobs.example.test/northwind/42
+globex labs|machine learning engineer,Globex Labs,Machine Learning Engineer,skipped,2026-01-09,https://jobs.example.test/globex/ml-7
