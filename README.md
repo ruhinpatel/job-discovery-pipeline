@@ -10,7 +10,7 @@ A pipeline that collects job postings from multiple sources, normalizes them, re
 flowchart TD
     A[Sources] --> B[Normalization]
     B --> C[Dedup ledger]
-    C --> D["Scoring, gating and routing"]
+    C --> D[Scoring and routing]
     D --> E[Ranked queue]
     E --> F[Human review gate]
 
