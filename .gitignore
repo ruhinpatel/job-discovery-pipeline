@@ -12,3 +12,6 @@ htmlcov/
 .idea/
 .vscode/
 .env
+
+# Private design specs (not for the public portfolio repo)
+specs/
