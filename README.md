@@ -38,21 +38,32 @@ The test suite currently reports `101 passed`.
 
 ## Architecture
 
-```mermaid
-flowchart TD
-    A[Sources] --> B[Normalization]
-    B --> C[Dedup ledger]
-    C --> D[Scoring and routing]
-    D --> E[Ranked queue]
-    E --> F[Human review gate]
-
-    classDef done fill:#c8e6c9,stroke:#2e7d32,stroke-width:2px,color:#16321c;
-    classDef human fill:#fff4d6,stroke:#b8860b,stroke-width:2px,color:#3a2e00;
-    class A,B,C,D,E done;
-    class F human;
+```text
+  Sources (4 adapters)      linkedin_alerts, job_boards, github_lists, company_careers
+          |
+          v
+  Normalization             map each source's shape to one canonical posting schema
+          |
+          v
+  Dedup ledger              drop roles already resolved (company|title fingerprint)
+          |
+          v
+  Hard gates                remove ineligible rows (YOE, work auth, clearance, location)
+          |
+          v
+  Fit scorer                weighted rubric -> 0-100 score (deterministic, optional LLM)
+          |
+          v
+  Lane routing              SKIP / FAST-APPLY / QUICK-TAILOR / DEEP-TAILOR
+          |
+          v
+  Ranked queue
+          |
+          v
+  [ Human review gate ]     a person decides; nothing downstream runs automatically
 ```
 
-In code the stages are: adapters (4 sources) -> normalization -> dedup ledger (fingerprint) -> hard gates -> fit scorer (deterministic rubric, optional LLM) -> lane routing -> ranked queue -> human review gate.
+The pipeline orders the work up to the ranked queue; the final gate is a person, not code.
 
 ### Optional: LLM scoring
 
