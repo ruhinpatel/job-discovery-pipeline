@@ -7,19 +7,17 @@ A pipeline that collects job postings from multiple sources, normalizes them, re
 ## Architecture
 
 ```mermaid
-flowchart LR
-    A[Sources<br/>IMPLEMENTED] --> B[Normalization<br/>IMPLEMENTED]
-    B --> C[Dedup ledger<br/>IMPLEMENTED]
-    C --> D[Fit-scoring + routing<br/>IMPLEMENTED]
-    D --> E[Ranked queue<br/>IMPLEMENTED]
-    E --> F[Human review gate<br/>IMPLEMENTED]
+flowchart TD
+    A[Sources] --> B[Normalization]
+    B --> C[Dedup ledger]
+    C --> D[Scoring and routing]
+    D --> E[Ranked queue]
+    E --> F[Human review gate]
 
-    style C fill:#c8e6c9,stroke:#2e7d32,stroke-width:2px
-    style D fill:#c8e6c9,stroke:#2e7d32,stroke-width:2px
-    style E fill:#c8e6c9,stroke:#2e7d32,stroke-width:2px
-    style A fill:#c8e6c9,stroke:#2e7d32,stroke-width:2px
-    style B fill:#c8e6c9,stroke:#2e7d32,stroke-width:2px
-    style F fill:#c8e6c9,stroke:#2e7d32,stroke-width:2px
+    classDef done fill:#c8e6c9,stroke:#2e7d32,stroke-width:2px,color:#16321c;
+    classDef human fill:#fff4d6,stroke:#b8860b,stroke-width:2px,color:#3a2e00;
+    class A,B,C,D,E done;
+    class F human;
 ```
 
 ### Implemented: source adapters (sources + normalization)
