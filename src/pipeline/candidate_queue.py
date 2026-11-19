@@ -112,12 +112,16 @@ def format_queue(result: dict) -> str:
              f"{result['duplicate_count']} in-batch duplicates | {len(result['queue'])} in queue", ""]
     if result["queue"]:
         lines.append(f"{'#':>2}  {'Score':>5}  {'Lane':<14} {'Company':<18} {'Title':<30} "
-                     "Matched skills")
+                     f"{'Matched skills':<60} Why")
         for i, r in enumerate(result["queue"], 1):
             skills = ", ".join(r["matched_skills"]) or "-"
             lane = f"{r['lane']} {r['lane_name']}"
+            matched = f"{len(r['matched_skills'])} ({skills})"
+            why = r["lane_reason"]
+            if len(why) > 45:
+                why = why[:44] + "..."
             lines.append(f"{i:>2}  {r['score']:>5.1f}  {lane:<14} {r['company']:<18} "
-                         f"{r['title']:<30} {len(r['matched_skills'])} ({skills})")
+                         f"{r['title']:<30} {matched:<60} {why}")
     else:
         lines.append("Queue is empty.")
     if result["gated"]:

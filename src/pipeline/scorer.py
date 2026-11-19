@@ -37,16 +37,27 @@ def load_postings(path: Path = DEFAULT_POSTINGS_PATH) -> list[dict[str, str]]:
         return list(csv.DictReader(f))
 
 
+# Skills whose lowercase form is also an ordinary English word. Matching them
+# case-insensitively makes "ready to go / go live" score a full Go match, so
+# these match only on case-sensitive aliases in the original description.
+# Deliberately a small special-case table, not general disambiguation.
+_AMBIGUOUS_SKILLS = {"go": ["Go", "Golang"]}
+
+
 def _skills_overlap(description: str, skills: list[str]) -> tuple[float, list[str]]:
     """Fraction of the profile's skills that appear as whole words in the
     description (case-insensitive). Skills containing a space, "+" or "/" (e.g. "CI/CD", which the word
-    tokenizer would split apart) match as substrings."""
+    tokenizer would split apart) match as substrings. Skills listed in
+    _AMBIGUOUS_SKILLS match only via case-sensitive aliases (see above)."""
     text = description.lower()
     words = set(_WORD_RE.findall(text))
+    original_words = set(re.findall(r"[A-Za-z0-9+]+", description))
     matched = []
     for skill in skills:
         skill_l = skill.lower()
-        if " " in skill_l or "+" in skill_l or "/" in skill_l:
+        if skill_l in _AMBIGUOUS_SKILLS:
+            hit = any(alias in original_words for alias in _AMBIGUOUS_SKILLS[skill_l])
+        elif " " in skill_l or "+" in skill_l or "/" in skill_l:
             hit = skill_l in text
         else:
             hit = skill_l in words

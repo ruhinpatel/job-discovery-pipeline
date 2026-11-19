@@ -25,6 +25,25 @@ def test_strong_match_scores_high():
     assert "Go" in result["matched_skills"]
 
 
+def test_lowercase_go_is_not_the_go_language():
+    profile = load_profile(PROFILE)
+    posting = {
+        "company": "Acme", "title": "Backend Engineer",
+        "description": "Ready to go? We help customers go live fast with Python.",
+        "min_years_experience": "1",
+    }
+    assert "Go" not in score_posting(posting, profile)["matched_skills"]
+
+
+def test_golang_counts_as_go():
+    profile = load_profile(PROFILE)
+    posting = {
+        "company": "Acme", "title": "Backend Engineer",
+        "description": "Services written in Golang.", "min_years_experience": "1",
+    }
+    assert "Go" in score_posting(posting, profile)["matched_skills"]
+
+
 def test_over_qualification_floor_zeroes_seniority_fit():
     profile = load_profile(PROFILE)
     posting = {
