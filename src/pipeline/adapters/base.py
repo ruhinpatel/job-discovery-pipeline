@@ -6,7 +6,13 @@ score -> rank) only understands one shape: the canonical posting, a dict with
 exactly these keys:
 
     company (str), title (str), url (str), description (str),
-    min_years_experience (int)
+    min_years_experience (int), location (str), sponsorship_offered (bool),
+    requires_clearance (bool), referral (bool)
+
+The last four feed the decision layer (gates, lanes). A source that lacks one
+gets a safe default so a missing value never disqualifies a posting:
+sponsorship_offered=True, requires_clearance=False, referral=False,
+location="" (unknown).
 
 A SourceAdapter isolates that mismatch. Each source gets one small subclass
 that knows how to load its raw records (`fetch_raw`) and map them to the
@@ -27,7 +33,8 @@ from abc import ABC, abstractmethod
 from pathlib import Path
 from typing import Any
 
-CANONICAL_KEYS = ("company", "title", "url", "description", "min_years_experience")
+CANONICAL_KEYS = ("company", "title", "url", "description", "min_years_experience",
+                  "location", "sponsorship_offered", "requires_clearance", "referral")
 
 # Repo root is three levels up from this file (src/pipeline/adapters/base.py).
 DEFAULT_RAW_DIR = Path(__file__).resolve().parents[3] / "data" / "raw"
@@ -54,6 +61,19 @@ def parse_min_years(text: str) -> int:
     # Strip ranges before the single-figure pass so "0-2 years" does not also yield 2.
     found += [int(m) for m in _YEARS_RE.findall(_RANGE_RE.sub(" ", text))]
     return min(found) if found else 0
+
+
+def as_bool(value: Any, default: bool) -> bool:
+    """Coerce a raw flag to bool, returning `default` when the source omitted it.
+
+    Accepts real bools and the strings "true"/"false" (CSV-style). Anything
+    else is treated as missing, so the caller's safe default applies.
+    """
+    if isinstance(value, bool):
+        return value
+    if isinstance(value, str) and value.strip().lower() in ("true", "false"):
+        return value.strip().lower() == "true"
+    return default
 
 
 class SourceAdapter(ABC):

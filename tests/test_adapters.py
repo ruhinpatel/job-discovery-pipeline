@@ -34,6 +34,9 @@ def test_fetch_raw_nonempty_and_output_is_canonical(cls):
             assert isinstance(row[key], str) and row[key]
         assert isinstance(row["min_years_experience"], int)
         assert row["min_years_experience"] >= 0
+        assert isinstance(row["location"], str)
+        for key in ("sponsorship_offered", "requires_clearance", "referral"):
+            assert isinstance(row[key], bool), key
 
 
 @pytest.mark.parametrize("cls,expected", [(LinkedInAlertsAdapter, 8), (JobBoardsAdapter, 8),
@@ -90,7 +93,9 @@ def test_master_postings_is_exactly_the_adapter_output():
     assert len(master) == len(merged)
     assert (Counter(fingerprint(r["company"], r["title"]) for r in master)
             == Counter(fingerprint(r["company"], r["title"]) for r in merged))
-    assert [{**r, "min_years_experience": int(r["min_years_experience"])} for r in master] == merged
+    bools = ("sponsorship_offered", "requires_clearance", "referral")
+    assert [{**r, "min_years_experience": int(r["min_years_experience"]),
+             **{k: r[k] == "True" for k in bools}} for r in master] == merged
 
 
 def test_build_postings_writes_canonical_deterministic_csv(tmp_path):
@@ -117,3 +122,38 @@ def test_run_all_adapters_sums_sources():
     expected = sum(len(cls().run()) for cls in ALL_ADAPTERS)
     assert len(run_all_adapters()) == expected
     assert expected > 0
+
+
+def test_decision_fields_carried_through_each_source():
+    rows = LinkedInAlertsAdapter().run()
+    assert _by_title(rows, "Software Engineer, New Grad")["referral"] is True
+    assert _by_title(rows, "Backend Engineer")["location"] == "London, UK"
+    boards = JobBoardsAdapter().run()
+    assert _by_title(boards, "Software Engineer, Infrastructure")["sponsorship_offered"] is False
+    assert _by_title(boards, "ML Platform Engineer")["requires_clearance"] is True
+    gh = GithubListsAdapter().run()
+    assert _by_title(gh, "Backend Engineer")["sponsorship_offered"] is False  # "Does Not Offer"
+    assert _by_title(gh, "Data Engineer I")["sponsorship_offered"] is True  # "Unknown" stays safe
+    assert _by_title(CompanyCareersAdapter().run(), "Facilities Technician")["location"] == "Seattle, WA"
+
+
+def test_missing_decision_fields_default_safely(tmp_path):
+    (tmp_path / "linkedin_alerts.json").write_text(
+        '[{"jobTitle": "Engineer", "companyName": "Bare Co", "link": "https://x.example.test/1", '
+        '"snippet": "Python."}]', encoding="utf-8")
+    (tmp_path / "job_boards.json").write_text(
+        '{"jobs": [{"title": "Engineer", "company": {"name": "Bare Co"}, '
+        '"absolute_url": "https://x.example.test/2", "content": "Python."}]}', encoding="utf-8")
+    (tmp_path / "github_lists.csv").write_text(
+        "company,role,application_link,notes\nBare Co,Engineer,https://x.example.test/3,Python.\n",
+        encoding="utf-8")
+    (tmp_path / "company_careers.json").write_text(
+        '{"company": "Bare Co", "postings": [{"name": "Engineer", '
+        '"hostedUrl": "https://x.example.test/4", "descriptionPlain": "Python."}]}',
+        encoding="utf-8")
+    for cls in ADAPTERS:
+        (row,) = cls(tmp_path).run()
+        assert row["location"] == ""
+        assert row["sponsorship_offered"] is True
+        assert row["requires_clearance"] is False
+        assert row["referral"] is False

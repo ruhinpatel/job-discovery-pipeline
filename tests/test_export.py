@@ -5,9 +5,10 @@ import json
 from pipeline import export_demo
 from pipeline.export_demo import build_export
 
-TOP_KEYS = {"disclaimer", "summary", "queue", "sources", "routing_tiers"}
+TOP_KEYS = {"disclaimer", "summary", "queue", "gated", "sources", "routing_tiers"}
 ROW_TYPES = {"rank": int, "score": float, "company": str, "title": str,
-             "matched_skills": list, "min_years_experience": int, "url": str}
+             "matched_skills": list, "min_years_experience": int, "url": str,
+             "lane": int, "lane_name": str, "lane_reason": str}
 
 
 def test_top_level_keys():
@@ -16,7 +17,8 @@ def test_top_level_keys():
 
 def test_summary_reconciles():
     s = build_export()["summary"]
-    assert s["resolved_suppressed"] + s["in_batch_duplicates"] + s["in_queue"] == s["total"]
+    assert (s["resolved_suppressed"] + s["gated"] + s["in_batch_duplicates"]
+            + s["in_queue"]) == s["total"]
     assert s["in_queue"] == len(build_export()["queue"])
 
 
@@ -54,3 +56,26 @@ def test_main_writes_js_global(tmp_path, monkeypatch):
     text = out.read_text(encoding="utf-8")
     assert text.startswith("window.DEMO_DATA = ") and text.rstrip().endswith(";")
     assert json.loads(text[len("window.DEMO_DATA = "):].rstrip().rstrip(";")) == build_export()
+
+
+def test_gated_section_shape_and_reconciliation():
+    data = build_export()
+    gated = data["gated"]
+    assert gated["count"] == len(gated["rows"]) == data["summary"]["gated"]
+    assert gated["count"] > 0
+    for row in gated["rows"]:
+        assert set(row) == {"company", "title", "url", "failed_gate", "reason"}
+        assert row["failed_gate"] in {"min_yoe", "work_authorization", "clearance", "location"}
+        assert row["reason"]
+
+
+def test_queue_rows_carry_lane_reason():
+    for row in build_export()["queue"]:
+        assert row["lane_reason"]
+
+
+def test_queue_lanes_are_valid_and_spread():
+    q = build_export()["queue"]
+    assert {r["lane"] for r in q} <= {0, 1, 2}
+    assert all(r["lane_name"] for r in q)
+    assert len({r["lane"] for r in q}) > 1  # demo shows more than one recommendation

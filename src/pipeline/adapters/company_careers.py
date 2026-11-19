@@ -11,7 +11,7 @@ from __future__ import annotations
 import json
 from typing import Any
 
-from pipeline.adapters.base import SourceAdapter, parse_min_years
+from pipeline.adapters.base import SourceAdapter, as_bool, parse_min_years
 
 
 class CompanyCareersAdapter(SourceAdapter):
@@ -37,5 +37,9 @@ class CompanyCareersAdapter(SourceAdapter):
                 "url": p["hostedUrl"].strip(),
                 "description": desc,
                 "min_years_experience": parse_min_years(p.get("descriptionPlain", "")),
+                "location": p.get("location", "").strip(),
+                "sponsorship_offered": as_bool(p.get("sponsorshipOffered"), True),
+                "requires_clearance": as_bool(p.get("requiresClearance"), False),
+                "referral": as_bool(p.get("referral"), False),
             })
         return out

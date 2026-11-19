@@ -1,0 +1,75 @@
+from pipeline.gates import GateResult, check_gates
+
+PROFILE = {
+    "max_years_experience": 2,
+    "needs_sponsorship": True,
+    "can_obtain_clearance": False,
+    "allowed_locations": ["Remote - US", "New York, NY"],
+}
+
+
+def _posting(**overrides):
+    base = {"min_years_experience": 1, "location": "Remote - US",
+            "sponsorship_offered": True, "requires_clearance": False}
+    return {**base, **overrides}
+
+
+def test_eligible_posting_passes():
+    assert check_gates(_posting(), PROFILE) == GateResult(True, None, None)
+
+
+def test_min_yoe_boundary():
+    assert check_gates(_posting(min_years_experience=2), PROFILE).passed
+    result = check_gates(_posting(min_years_experience=3), PROFILE)
+    assert not result.passed and result.failed_gate == "min_yoe"
+    assert "3y" in result.reason and "2y" in result.reason
+
+
+def test_work_authorization():
+    result = check_gates(_posting(sponsorship_offered=False), PROFILE)
+    assert result.failed_gate == "work_authorization" and result.reason == "no sponsorship offered"
+    # A candidate who needs no sponsorship is not gated by its absence.
+    assert check_gates(_posting(sponsorship_offered=False),
+                       {**PROFILE, "needs_sponsorship": False}).passed
+
+
+def test_clearance():
+    result = check_gates(_posting(requires_clearance=True), PROFILE)
+    assert result.failed_gate == "clearance" and result.reason == "clearance required"
+    assert check_gates(_posting(requires_clearance=True),
+                       {**PROFILE, "can_obtain_clearance": True}).passed
+
+
+def test_location():
+    assert check_gates(_posting(location="New York, NY"), PROFILE).passed
+    result = check_gates(_posting(location="London, UK"), PROFILE)
+    assert result.failed_gate == "location" and "London, UK" in result.reason
+
+
+def test_first_failure_wins_in_documented_order():
+    everything_wrong = _posting(min_years_experience=9, sponsorship_offered=False,
+                                requires_clearance=True, location="London, UK")
+    assert check_gates(everything_wrong, PROFILE).failed_gate == "min_yoe"
+    no_yoe = {**everything_wrong, "min_years_experience": 0}
+    assert check_gates(no_yoe, PROFILE).failed_gate == "work_authorization"
+    no_auth = {**no_yoe, "sponsorship_offered": True}
+    assert check_gates(no_auth, PROFILE).failed_gate == "clearance"
+    no_clear = {**no_auth, "requires_clearance": False}
+    assert check_gates(no_clear, PROFILE).failed_gate == "location"
+
+
+def test_missing_posting_fields_never_disqualify():
+    assert check_gates({"min_years_experience": 0}, PROFILE).passed
+    assert check_gates({}, PROFILE).passed
+
+
+def test_missing_profile_fields_never_disqualify():
+    bare_profile = {"max_years_experience": 2}
+    posting = _posting(sponsorship_offered=False, requires_clearance=True, location="Mars")
+    assert check_gates(posting, bare_profile).passed
+
+
+def test_csv_string_booleans_are_understood():
+    assert check_gates(_posting(sponsorship_offered="False"), PROFILE).failed_gate == "work_authorization"
+    assert check_gates(_posting(requires_clearance="True"), PROFILE).failed_gate == "clearance"
+    assert check_gates(_posting(sponsorship_offered="", requires_clearance=""), PROFILE).passed

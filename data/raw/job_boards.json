@@ -16,7 +16,11 @@
           "name": "team",
           "value": "Core"
         }
-      ]
+      ],
+      "location": "Remote - US",
+      "sponsorship_offered": true,
+      "requires_clearance": false,
+      "referral": false
     },
     {
       "title": "Analytics Engineer",
@@ -30,7 +34,11 @@
           "name": "yoe",
           "value": "4"
         }
-      ]
+      ],
+      "location": "New York, NY",
+      "sponsorship_offered": true,
+      "requires_clearance": false,
+      "referral": false
     },
     {
       "title": "Software Engineer, Infrastructure",
@@ -39,7 +47,11 @@
       },
       "absolute_url": "https://boards.example.test/marlow/9003",
       "content": "Operate Terraform, Kubernetes and AWS at scale with Python and Go. Distributed systems and CI/CD focus. Prior experience of 2 years helpful.",
-      "metadata": []
+      "metadata": [],
+      "location": "San Francisco, CA",
+      "sponsorship_offered": false,
+      "requires_clearance": false,
+      "referral": false
     },
     {
       "title": "ML Platform Engineer",
@@ -53,7 +65,11 @@
           "name": "yoe",
           "value": "n/a"
         }
-      ]
+      ],
+      "location": "Seattle, WA",
+      "sponsorship_offered": true,
+      "requires_clearance": true,
+      "referral": false
     },
     {
       "title": "Backend Engineer I - 2027",
@@ -67,7 +83,11 @@
           "name": "yoe",
           "value": "1"
         }
-      ]
+      ],
+      "location": "Remote - US",
+      "sponsorship_offered": true,
+      "requires_clearance": false,
+      "referral": false
     },
     {
       "title": "Software Engineer, Payments",
@@ -81,7 +101,11 @@
           "name": "yoe",
           "value": "1"
         }
-      ]
+      ],
+      "location": "New York, NY",
+      "sponsorship_offered": true,
+      "requires_clearance": false,
+      "referral": false
     },
     {
       "title": "Staff Software Engineer",
@@ -95,7 +119,11 @@
           "name": "yoe",
           "value": "8"
         }
-      ]
+      ],
+      "location": "Seattle, WA",
+      "sponsorship_offered": true,
+      "requires_clearance": false,
+      "referral": false
     },
     {
       "title": "Warehouse Operations Coordinator",
@@ -109,7 +137,11 @@
           "name": "yoe",
           "value": "5"
         }
-      ]
+      ],
+      "location": "Chicago, IL",
+      "sponsorship_offered": true,
+      "requires_clearance": false,
+      "referral": false
     }
   ]
 }

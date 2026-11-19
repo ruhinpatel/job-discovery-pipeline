@@ -43,8 +43,15 @@ def build_export() -> dict:
 
     queue = [{"rank": i, "score": r["score"], "company": r["company"], "title": r["title"],
               "matched_skills": list(r["matched_skills"]),
-              "min_years_experience": years_by_url.get(r["url"], 0), "url": r["url"]}
+              "min_years_experience": years_by_url.get(r["url"], 0), "url": r["url"],
+              "lane": r["lane"], "lane_name": r["lane_name"],
+              "lane_reason": r["lane_reason"]}
              for i, r in enumerate(result["queue"], 1)]
+
+    gated = {"count": result["gated_count"],
+             "rows": [{"company": g["company"], "title": g["title"], "url": g["url"],
+                       "failed_gate": g["failed_gate"], "reason": g["reason"]}
+                      for g in result["gated"]]}
 
     # Per-source counts come from each ingest adapter run, before dedup. They
     # sum to summary.total because data/postings.csv is the generated merge of
@@ -58,9 +65,11 @@ def build_export() -> dict:
         "disclaimer": DISCLAIMER,
         "summary": {"total": result["total"],
                     "resolved_suppressed": result["suppressed_count"],
+                    "gated": result["gated_count"],
                     "in_batch_duplicates": result["duplicate_count"],
                     "in_queue": len(result["queue"])},
         "queue": queue,
+        "gated": gated,
         "sources": sources,
         "routing_tiers": routing,
     }

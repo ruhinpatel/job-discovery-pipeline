@@ -3,7 +3,9 @@
 Raw shape: CSV with columns company, role, application_link, notes,
 sponsorship. There is no description column, so `notes` plus the sponsorship
 flag are folded into the canonical description (the scorer reads that text).
-Years are parsed from the notes.
+Years are parsed from the notes. The sponsorship column maps to
+sponsorship_offered: only an explicit "Does Not Offer" is False; "Offers" and
+"Unknown" (and blank) are True, so an unknown never auto-disqualifies.
 """
 
 from __future__ import annotations
@@ -11,7 +13,7 @@ from __future__ import annotations
 import csv
 from typing import Any
 
-from pipeline.adapters.base import SourceAdapter, parse_min_years
+from pipeline.adapters.base import SourceAdapter, as_bool, parse_min_years
 
 
 class GithubListsAdapter(SourceAdapter):
@@ -36,5 +38,9 @@ class GithubListsAdapter(SourceAdapter):
                 "url": row["application_link"].strip(),
                 "description": description,
                 "min_years_experience": parse_min_years(notes),
+                "location": row.get("location", "").strip(),
+                "sponsorship_offered": not sponsorship.lower().startswith("does not"),
+                "requires_clearance": as_bool(row.get("requires_clearance"), False),
+                "referral": as_bool(row.get("referral"), False),
             })
         return out

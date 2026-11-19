@@ -11,7 +11,7 @@ from __future__ import annotations
 import json
 from typing import Any
 
-from pipeline.adapters.base import SourceAdapter, parse_min_years
+from pipeline.adapters.base import SourceAdapter, as_bool, parse_min_years
 
 # Fallback floors when the snippet states no explicit years.
 _SENIORITY_FLOOR = {"internship": 0, "entry level": 0, "associate": 1, "mid-senior level": 4}
@@ -37,5 +37,9 @@ class LinkedInAlertsAdapter(SourceAdapter):
                 "url": r["link"].strip(),
                 "description": snippet.strip(),
                 "min_years_experience": years,
+                "location": r.get("location", "").strip(),
+                "sponsorship_offered": as_bool(r.get("sponsorshipOffered"), True),
+                "requires_clearance": as_bool(r.get("requiresClearance"), False),
+                "referral": as_bool(r.get("referral"), False),
             })
         return out

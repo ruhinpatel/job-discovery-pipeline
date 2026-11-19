@@ -11,7 +11,7 @@ from __future__ import annotations
 import json
 from typing import Any
 
-from pipeline.adapters.base import SourceAdapter, parse_min_years
+from pipeline.adapters.base import SourceAdapter, as_bool, parse_min_years
 
 
 class JobBoardsAdapter(SourceAdapter):
@@ -43,5 +43,9 @@ class JobBoardsAdapter(SourceAdapter):
                 "url": job["absolute_url"].strip(),
                 "description": job.get("content", "").strip(),
                 "min_years_experience": years,
+                "location": job.get("location", "").strip(),
+                "sponsorship_offered": as_bool(job.get("sponsorship_offered"), True),
+                "requires_clearance": as_bool(job.get("requires_clearance"), False),
+                "referral": as_bool(job.get("referral"), False),
             })
         return out

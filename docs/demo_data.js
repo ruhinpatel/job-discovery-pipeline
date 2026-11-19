@@ -3,8 +3,9 @@ window.DEMO_DATA = {
   "summary": {
     "total": 30,
     "resolved_suppressed": 6,
+    "gated": 11,
     "in_batch_duplicates": 4,
-    "in_queue": 20
+    "in_queue": 9
   },
   "queue": [
     {
@@ -23,7 +24,10 @@ window.DEMO_DATA = {
         "CI/CD"
       ],
       "min_years_experience": 1,
-      "url": "https://boards.example.test/tidewater/9001"
+      "url": "https://boards.example.test/tidewater/9001",
+      "lane": 1,
+      "lane_name": "FAST-APPLY",
+      "lane_reason": "score 93.3 at or above 70"
     },
     {
       "rank": 2,
@@ -39,42 +43,13 @@ window.DEMO_DATA = {
         "CI/CD"
       ],
       "min_years_experience": 0,
-      "url": "https://alerts.example.test/lumen-orbital/301"
+      "url": "https://alerts.example.test/lumen-orbital/301",
+      "lane": 1,
+      "lane_name": "FAST-APPLY",
+      "lane_reason": "referral bypasses the keyword screen"
     },
     {
       "rank": 3,
-      "score": 80.0,
-      "company": "Vantage Ledger",
-      "title": "Backend Engineer",
-      "matched_skills": [
-        "Go",
-        "SQL",
-        "AWS",
-        "REST APIs",
-        "Git",
-        "distributed systems"
-      ],
-      "min_years_experience": 1,
-      "url": "https://alerts.example.test/vantage/305"
-    },
-    {
-      "rank": 4,
-      "score": 80.0,
-      "company": "Marlow Cloud",
-      "title": "Software Engineer, Infrastructure",
-      "matched_skills": [
-        "Python",
-        "Go",
-        "AWS",
-        "Kubernetes",
-        "distributed systems",
-        "CI/CD"
-      ],
-      "min_years_experience": 2,
-      "url": "https://boards.example.test/marlow/9003"
-    },
-    {
-      "rank": 5,
       "score": 73.3,
       "company": "Kestrel Security",
       "title": "Platform Engineer, New Grad",
@@ -86,10 +61,13 @@ window.DEMO_DATA = {
         "CI/CD"
       ],
       "min_years_experience": 0,
-      "url": "https://lists.example.test/kestrel/platform"
+      "url": "https://lists.example.test/kestrel/platform",
+      "lane": 1,
+      "lane_name": "FAST-APPLY",
+      "lane_reason": "score 73.3 at or above 70"
     },
     {
-      "rank": 6,
+      "rank": 4,
       "score": 66.7,
       "company": "Northgate Robotics",
       "title": "Software Engineer, Perception",
@@ -100,23 +78,13 @@ window.DEMO_DATA = {
         "CI/CD"
       ],
       "min_years_experience": 0,
-      "url": "https://careers.example.test/northgate/p-11"
+      "url": "https://careers.example.test/northgate/p-11",
+      "lane": 2,
+      "lane_name": "QUICK-TAILOR",
+      "lane_reason": "score 66.7 in the 60-70 band where a short tailor can cross the cliff"
     },
     {
-      "rank": 7,
-      "score": 60.0,
-      "company": "Sable AI",
-      "title": "ML Platform Engineer",
-      "matched_skills": [
-        "Python",
-        "AWS",
-        "Kubernetes"
-      ],
-      "min_years_experience": 0,
-      "url": "https://boards.example.test/sable/9004"
-    },
-    {
-      "rank": 8,
+      "rank": 5,
       "score": 60.0,
       "company": "Fernwood Games",
       "title": "Software Engineer New Grad 2027",
@@ -126,76 +94,13 @@ window.DEMO_DATA = {
         "CI/CD"
       ],
       "min_years_experience": 0,
-      "url": "https://lists.example.test/fernwood/new-grad"
+      "url": "https://lists.example.test/fernwood/new-grad",
+      "lane": 2,
+      "lane_name": "QUICK-TAILOR",
+      "lane_reason": "score 60 in the 60-70 band where a short tailor can cross the cliff"
     },
     {
-      "rank": 9,
-      "score": 58.3,
-      "company": "Brightfield Labs",
-      "title": "Platform Engineer",
-      "matched_skills": [
-        "Python",
-        "Go",
-        "AWS",
-        "Kubernetes",
-        "CI/CD"
-      ],
-      "min_years_experience": 4,
-      "url": "https://alerts.example.test/brightfield/304"
-    },
-    {
-      "rank": 10,
-      "score": 45.0,
-      "company": "Zephyr Freight",
-      "title": "Principal Software Engineer",
-      "matched_skills": [
-        "Go",
-        "Kubernetes",
-        "distributed systems"
-      ],
-      "min_years_experience": 10,
-      "url": "https://alerts.example.test/zephyr/307"
-    },
-    {
-      "rank": 11,
-      "score": 45.0,
-      "company": "Orchid Cloud",
-      "title": "Staff Software Engineer",
-      "matched_skills": [
-        "AWS",
-        "Kubernetes",
-        "distributed systems"
-      ],
-      "min_years_experience": 8,
-      "url": "https://boards.example.test/orchid/9007"
-    },
-    {
-      "rank": 12,
-      "score": 45.0,
-      "company": "Pinecrest Health",
-      "title": "Backend Engineer",
-      "matched_skills": [
-        "Python",
-        "SQL",
-        "REST APIs"
-      ],
-      "min_years_experience": 3,
-      "url": "https://lists.example.test/pinecrest/be"
-    },
-    {
-      "rank": 13,
-      "score": 38.3,
-      "company": "Northgate Robotics",
-      "title": "Senior Software Engineer, Autonomy",
-      "matched_skills": [
-        "Kubernetes",
-        "distributed systems"
-      ],
-      "min_years_experience": 7,
-      "url": "https://careers.example.test/northgate/p-16"
-    },
-    {
-      "rank": 14,
+      "rank": 6,
       "score": 35.0,
       "company": "Harbor Analytics",
       "title": "Data Engineer",
@@ -205,10 +110,13 @@ window.DEMO_DATA = {
         "AWS"
       ],
       "min_years_experience": 2,
-      "url": "https://alerts.example.test/harbor/306"
+      "url": "https://alerts.example.test/harbor/306",
+      "lane": 1,
+      "lane_name": "FAST-APPLY",
+      "lane_reason": "referral bypasses the keyword screen"
     },
     {
-      "rank": 15,
+      "rank": 7,
       "score": 35.0,
       "company": "Northgate Robotics",
       "title": "Machine Learning Engineer",
@@ -218,10 +126,13 @@ window.DEMO_DATA = {
         "Kubernetes"
       ],
       "min_years_experience": 0,
-      "url": "https://careers.example.test/northgate/p-13"
+      "url": "https://careers.example.test/northgate/p-13",
+      "lane": 0,
+      "lane_name": "SKIP",
+      "lane_reason": "score 35 below 60 and no referral"
     },
     {
-      "rank": 16,
+      "rank": 8,
       "score": 28.3,
       "company": "Ironbark Data",
       "title": "Data Engineer I",
@@ -230,50 +141,106 @@ window.DEMO_DATA = {
         "SQL"
       ],
       "min_years_experience": 1,
-      "url": "https://lists.example.test/ironbark/de1"
+      "url": "https://lists.example.test/ironbark/de1",
+      "lane": 0,
+      "lane_name": "SKIP",
+      "lane_reason": "score 28.3 below 60 and no referral"
     },
     {
-      "rank": 17,
+      "rank": 9,
       "score": 15.0,
       "company": "Northgate Robotics",
       "title": "Facilities Technician",
       "matched_skills": [],
       "min_years_experience": 2,
-      "url": "https://careers.example.test/northgate/p-17"
-    },
-    {
-      "rank": 18,
-      "score": 13.3,
-      "company": "Northgate Robotics",
-      "title": "Data Engineer, Telemetry",
-      "matched_skills": [
-        "Python",
-        "SQL"
-      ],
-      "min_years_experience": 3,
-      "url": "https://careers.example.test/northgate/p-12"
-    },
-    {
-      "rank": 19,
-      "score": 6.7,
-      "company": "Quill Systems",
-      "title": "Machine Learning Engineer",
-      "matched_skills": [
-        "Python"
-      ],
-      "min_years_experience": 3,
-      "url": "https://alerts.example.test/quill/303"
-    },
-    {
-      "rank": 20,
-      "score": 0.0,
-      "company": "Greenleaf Logistics",
-      "title": "Warehouse Operations Coordinator",
-      "matched_skills": [],
-      "min_years_experience": 5,
-      "url": "https://boards.example.test/greenleaf/9008"
+      "url": "https://careers.example.test/northgate/p-17",
+      "lane": 0,
+      "lane_name": "SKIP",
+      "lane_reason": "score 15 below 60 and no referral"
     }
   ],
+  "gated": {
+    "count": 11,
+    "rows": [
+      {
+        "company": "Quill Systems",
+        "title": "Machine Learning Engineer",
+        "url": "https://alerts.example.test/quill/303",
+        "failed_gate": "min_yoe",
+        "reason": "stated floor 3y above candidate ceiling 2y"
+      },
+      {
+        "company": "Brightfield Labs",
+        "title": "Platform Engineer",
+        "url": "https://alerts.example.test/brightfield/304",
+        "failed_gate": "min_yoe",
+        "reason": "stated floor 4y above candidate ceiling 2y"
+      },
+      {
+        "company": "Vantage Ledger",
+        "title": "Backend Engineer",
+        "url": "https://alerts.example.test/vantage/305",
+        "failed_gate": "location",
+        "reason": "location 'London, UK' not in candidate's allowed set"
+      },
+      {
+        "company": "Zephyr Freight",
+        "title": "Principal Software Engineer",
+        "url": "https://alerts.example.test/zephyr/307",
+        "failed_gate": "min_yoe",
+        "reason": "stated floor 10y above candidate ceiling 2y"
+      },
+      {
+        "company": "Marlow Cloud",
+        "title": "Software Engineer, Infrastructure",
+        "url": "https://boards.example.test/marlow/9003",
+        "failed_gate": "work_authorization",
+        "reason": "no sponsorship offered"
+      },
+      {
+        "company": "Sable AI",
+        "title": "ML Platform Engineer",
+        "url": "https://boards.example.test/sable/9004",
+        "failed_gate": "clearance",
+        "reason": "clearance required"
+      },
+      {
+        "company": "Orchid Cloud",
+        "title": "Staff Software Engineer",
+        "url": "https://boards.example.test/orchid/9007",
+        "failed_gate": "min_yoe",
+        "reason": "stated floor 8y above candidate ceiling 2y"
+      },
+      {
+        "company": "Greenleaf Logistics",
+        "title": "Warehouse Operations Coordinator",
+        "url": "https://boards.example.test/greenleaf/9008",
+        "failed_gate": "min_yoe",
+        "reason": "stated floor 5y above candidate ceiling 2y"
+      },
+      {
+        "company": "Pinecrest Health",
+        "title": "Backend Engineer",
+        "url": "https://lists.example.test/pinecrest/be",
+        "failed_gate": "min_yoe",
+        "reason": "stated floor 3y above candidate ceiling 2y"
+      },
+      {
+        "company": "Northgate Robotics",
+        "title": "Data Engineer, Telemetry",
+        "url": "https://careers.example.test/northgate/p-12",
+        "failed_gate": "min_yoe",
+        "reason": "stated floor 3y above candidate ceiling 2y"
+      },
+      {
+        "company": "Northgate Robotics",
+        "title": "Senior Software Engineer, Autonomy",
+        "url": "https://careers.example.test/northgate/p-16",
+        "failed_gate": "min_yoe",
+        "reason": "stated floor 7y above candidate ceiling 2y"
+      }
+    ]
+  },
   "sources": [
     {
       "name": "linkedin_alerts",

@@ -5,8 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Job Discovery Pipeline Demo</title>
 <style>
-:root{color-scheme:light;--bg:#f6f7f9;--surface:#fff;--ink:#16191d;--muted:#566070;--line:#dde1e7;--accent:#2557d6;--accent-soft:#e4ecfd;--warn:#7a4f00;--warn-bg:#fff4d6;--warn-line:#e6c36a;--track:#e6e9ef}
-@media (prefers-color-scheme:dark){:root{color-scheme:dark;--bg:#0f1318;--surface:#171c23;--ink:#e8ebf0;--muted:#9aa5b5;--line:#2a323d;--accent:#7aa2ff;--accent-soft:#1c2a47;--warn:#f0c674;--warn-bg:#2a2412;--warn-line:#5c4c1c;--track:#2a323d}}
+:root{color-scheme:light;--bg:#f6f7f9;--surface:#fff;--ink:#16191d;--muted:#566070;--line:#dde1e7;--accent:#2557d6;--accent-soft:#e4ecfd;--warn:#7a4f00;--warn-bg:#fff4d6;--warn-line:#e6c36a;--track:#e6e9ef;--ok:#1d6b3a;--ok-bg:#dff3e6;--ok-line:#8fcca4}
+@media (prefers-color-scheme:dark){:root{color-scheme:dark;--bg:#0f1318;--surface:#171c23;--ink:#e8ebf0;--muted:#9aa5b5;--line:#2a323d;--accent:#7aa2ff;--accent-soft:#1c2a47;--warn:#f0c674;--warn-bg:#2a2412;--warn-line:#5c4c1c;--track:#2a323d;--ok:#8fd8a6;--ok-bg:#16301f;--ok-line:#2d5c3d}}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;padding-inline:16px}
 main{max-width:1000px;margin:0 auto;padding-block:28px 48px}
@@ -42,6 +42,10 @@ td.num{font-variant-numeric:tabular-nums;color:var(--muted)}
 .tier h3{margin:0;font-size:.95rem}
 .badge{display:inline-block;font-size:.72rem;text-transform:uppercase;letter-spacing:.05em;border:1px solid var(--accent);color:var(--accent);border-radius:4px;padding:0 6px;margin-left:8px}
 .tier p{margin:4px 0 0;color:var(--muted);font-size:.9rem}
+.lane-fast{cursor:help;display:inline-block;background:var(--ok-bg);color:var(--ok);border:1px solid var(--ok-line);border-radius:999px;padding:1px 8px;font-size:.78rem;white-space:nowrap}
+.lane-quick{cursor:help;display:inline-block;background:var(--warn-bg);color:var(--warn);border:1px solid var(--warn-line);border-radius:999px;padding:1px 8px;font-size:.78rem;white-space:nowrap}
+.lane-skip{cursor:help;display:inline-block;background:var(--track);color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:1px 8px;font-size:.78rem;white-space:nowrap}
+.gated td.reason{font-size:.95rem}
 footer{margin-top:32px;color:var(--muted);font-size:.85rem}
 </style>
 </head>
@@ -55,13 +59,21 @@ footer{margin-top:32px;color:var(--muted);font-size:.85rem}
 
   <section aria-labelledby="h-q"><h2 id="h-q">Ranked queue</h2>
     <div class="scroll"><table>
-      <thead><tr><th>#</th><th>Fit score</th><th>Company</th><th>Title</th><th>Matched skills</th><th>Min YOE</th></tr></thead>
+      <thead><tr><th>#</th><th>Fit score</th><th>Company</th><th>Title</th><th>Matched skills</th><th>Min YOE</th><th>Recommended action</th></tr></thead>
       <tbody id="queue"></tbody>
     </table></div>
   </section>
 
   <section aria-labelledby="h-d"><h2 id="h-d">Deduplication</h2>
     <div class="two dedup" id="dedup"></div>
+  </section>
+
+  <section aria-labelledby="h-g"><h2 id="h-g">Gated out</h2>
+    <p class="sub">Postings removed by a hard eligibility gate before scoring. A high fit score does not matter if the role is not eligible.</p>
+    <div class="scroll gated"><table>
+      <thead><tr><th>Company</th><th>Title</th><th>Failed gate</th><th>Reason</th></tr></thead>
+      <tbody id="gated"></tbody>
+    </table></div>
   </section>
 
   <section aria-labelledby="h-s"><h2 id="h-s">Source ingestion</h2>
@@ -85,7 +97,7 @@ footer{margin-top:32px;color:var(--muted);font-size:.85rem}
   $("disclaimer").textContent = d.disclaimer;
 
   var s = d.summary;
-  [["Postings ingested", s.total],["Resolved, suppressed", s.resolved_suppressed],["In-batch duplicates", s.in_batch_duplicates],["In queue", s.in_queue, 1]]
+  [["Postings ingested", s.total],["Resolved, suppressed", s.resolved_suppressed],["Gated out", s.gated],["In-batch duplicates", s.in_batch_duplicates],["In queue", s.in_queue, 1]]
   .forEach(function(x){var c=el("div","stat"+(x[2]?" hl":"")); c.appendChild(el("b",null,x[1])); c.appendChild(el("span",null,x[0])); $("stats").appendChild(c);});
 
   d.queue.forEach(function(r){
@@ -99,12 +111,24 @@ footer{margin-top:32px;color:var(--muted);font-size:.85rem}
     var sk=el("td"); if(r.matched_skills.length){r.matched_skills.forEach(function(k){sk.appendChild(el("span","chip",k));});} else {sk.textContent="none";}
     tr.appendChild(sk);
     tr.appendChild(el("td","num",r.min_years_experience));
+    var ln=el("td"), lc={"FAST-APPLY":"lane-fast","QUICK-TAILOR":"lane-quick","SKIP":"lane-skip"}[r.lane_name];
+    var chip=el("span",lc||"lane-skip",r.lane_name); chip.title=r.lane_reason||""; ln.appendChild(chip); tr.appendChild(ln);
     $("queue").appendChild(tr);
   });
 
   [[s.resolved_suppressed,"Resolved, suppressed","Roles already applied to, skipped or rejected, recorded in the ledger. Removed before scoring so no effort is spent on them again, even when the posting reappears under a new URL."],
    [s.in_batch_duplicates,"In-batch duplicates","Unresolved reposts of the same role within this run (same company and title, different URL). Only the highest-scoring copy stays in the queue."]]
   .forEach(function(x){var c=el("div","card"); c.appendChild(el("div","big",x[0])); c.appendChild(el("h3",null,x[1])); c.appendChild(el("p",null,x[2])); $("dedup").appendChild(c);});
+
+  var gateLabels={min_yoe:"Minimum YOE",work_authorization:"Work authorization",clearance:"Clearance",location:"Location"};
+  d.gated.rows.forEach(function(g){
+    var tr=el("tr");
+    tr.appendChild(el("td",null,g.company));
+    tr.appendChild(el("td",null,g.title));
+    tr.appendChild(el("td",null,gateLabels[g.failed_gate]||g.failed_gate));
+    tr.appendChild(el("td","reason",g.reason));
+    $("gated").appendChild(tr);
+  });
 
   d.sources.forEach(function(x){var r=el("div","src"); r.appendChild(el("code",null,x.name)); r.appendChild(el("b",null,x.count+" postings")); $("sources").appendChild(r);});
 

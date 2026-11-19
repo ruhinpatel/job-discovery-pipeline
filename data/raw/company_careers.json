@@ -7,7 +7,11 @@
         "team": "Autonomy"
       },
       "hostedUrl": "https://careers.example.test/northgate/p-11",
-      "descriptionPlain": "Develop C++ perception services in Python and Go. Git and CI/CD practices. 0-2 years of experience; new graduates encouraged."
+      "descriptionPlain": "Develop C++ perception services in Python and Go. Git and CI/CD practices. 0-2 years of experience; new graduates encouraged.",
+      "location": "San Francisco, CA",
+      "sponsorshipOffered": true,
+      "requiresClearance": false,
+      "referral": false
     },
     {
       "name": "Data Engineer, Telemetry",
@@ -15,7 +19,11 @@
         "team": "Data Platform"
       },
       "hostedUrl": "https://careers.example.test/northgate/p-12",
-      "descriptionPlain": "Build streaming telemetry pipelines in Python, SQL and Spark. At least 3 years of experience."
+      "descriptionPlain": "Build streaming telemetry pipelines in Python, SQL and Spark. At least 3 years of experience.",
+      "location": "Seattle, WA",
+      "sponsorshipOffered": true,
+      "requiresClearance": false,
+      "referral": false
     },
     {
       "name": "Machine Learning Engineer",
@@ -23,7 +31,11 @@
         "team": "Research"
       },
       "hostedUrl": "https://careers.example.test/northgate/p-13",
-      "descriptionPlain": "Productionize vision models with PyTorch and Docker. Python, Kubernetes and AWS for training infrastructure."
+      "descriptionPlain": "Productionize vision models with PyTorch and Docker. Python, Kubernetes and AWS for training infrastructure.",
+      "location": "Seattle, WA",
+      "sponsorshipOffered": true,
+      "requiresClearance": false,
+      "referral": false
     },
     {
       "name": "Software Engineer - Perception",
@@ -31,7 +43,11 @@
         "team": "Autonomy"
       },
       "hostedUrl": "https://careers.example.test/northgate/p-14",
-      "descriptionPlain": "Develop C++ perception services. 0-2 years of experience; new graduates encouraged."
+      "descriptionPlain": "Develop C++ perception services. 0-2 years of experience; new graduates encouraged.",
+      "location": "San Francisco, CA",
+      "sponsorshipOffered": true,
+      "requiresClearance": false,
+      "referral": false
     },
     {
       "name": "Software Engineer, Simulation",
@@ -39,7 +55,11 @@
         "team": "Simulation"
       },
       "hostedUrl": "https://careers.example.test/northgate/p-15",
-      "descriptionPlain": "Build simulation tooling in Python. 1 year of experience."
+      "descriptionPlain": "Build simulation tooling in Python. 1 year of experience.",
+      "location": "Remote - US",
+      "sponsorshipOffered": true,
+      "requiresClearance": false,
+      "referral": false
     },
     {
       "name": "Senior Software Engineer, Autonomy",
@@ -47,7 +67,11 @@
         "team": "Autonomy"
       },
       "hostedUrl": "https://careers.example.test/northgate/p-16",
-      "descriptionPlain": "Lead autonomy stack design across distributed systems on Kubernetes. 7+ years of experience."
+      "descriptionPlain": "Lead autonomy stack design across distributed systems on Kubernetes. 7+ years of experience.",
+      "location": "Seattle, WA",
+      "sponsorshipOffered": true,
+      "requiresClearance": false,
+      "referral": false
     },
     {
       "name": "Facilities Technician",
@@ -55,7 +79,11 @@
         "team": "Facilities"
       },
       "hostedUrl": "https://careers.example.test/northgate/p-17",
-      "descriptionPlain": "Maintain robotics lab hardware and safety equipment. 2 years of facilities experience."
+      "descriptionPlain": "Maintain robotics lab hardware and safety equipment. 2 years of facilities experience.",
+      "location": "Seattle, WA",
+      "sponsorshipOffered": true,
+      "requiresClearance": false,
+      "referral": false
     }
   ]
 }
