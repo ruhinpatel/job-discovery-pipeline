@@ -110,3 +110,14 @@ def test_metadata_failure_falls_back_to_token():
     # blank / non-string name also falls back
     rows = GreenhouseLiveAdapter(["acme"], get=_meta_get('{"name": "  "}')).run()
     assert {r["company"] for r in rows} == {"acme"}
+
+
+def test_stray_less_than_does_not_swallow_the_requirement_sentence():
+    from pipeline.adapters.base import parse_min_years
+    from pipeline.adapters.greenhouse_live import clean_content
+    raw = ("&lt;p&gt;We ship fast, latency &lt; 100ms. "
+           "Requires 5+ years of experience.&lt;/p&gt;&lt;ul&gt;&lt;li&gt;Benefits&lt;/li&gt;&lt;/ul&gt;")
+    text = clean_content(raw)
+    assert "Requires 5+ years of experience." in text
+    assert "latency < 100ms" in text
+    assert parse_min_years(text) == 5

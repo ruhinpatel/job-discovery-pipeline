@@ -33,7 +33,9 @@ API_URL = "https://boards-api.greenhouse.io/v1/boards/{token}/jobs?content=true"
 BOARD_URL = "https://boards-api.greenhouse.io/v1/boards/{token}"
 USER_AGENT ="job-discovery-pipeline/0.1"
 
-_TAG_RE = re.compile(r"<[^>]+>")
+# Well-formed tags only (</?name ...>): a stray "<" in prose ("latency < 100ms")
+# must not swallow the text up to the next real tag.
+_TAG_RE = re.compile(r"</?[a-zA-Z][^>]*>")
 _WS_RE = re.compile(r"\s+")
 
 
