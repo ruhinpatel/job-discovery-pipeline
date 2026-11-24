@@ -2,7 +2,7 @@
 
 Ties the dedup ledger and the fit scorer into one flow: drop postings whose
 role is already resolved, score the survivors, collapse in-batch reposts of
-the same role to the best-scoring row, and rank them. The pipeline
+the same role to the best row (referral first, then score), and rank them. The pipeline
 only orders the work; a person reads the queue and decides what to do with
 each row. A decision layer then runs on the scored rows: hard gates remove
 ineligible postings, and surviving rows get a lane (the recommended effort).
@@ -52,8 +52,9 @@ def build_queue(
       with failed_gate and reason). Gated rows skip in-batch dedup, so a
       gated repost cannot displace an eligible row of the same role.
     - `duplicates`: unresolved reposts of a role already in this batch (same
-      fingerprint, different URL). Only the highest-scoring row per
-      fingerprint stays in `queue`; ties keep the first in input order.
+      fingerprint, different URL). Only one row per fingerprint
+      stays in `queue`: a referral row beats a non-referral one, then the
+      highest score wins; ties keep the first in input order.
     `queue` holds the deduped, scored survivors, highest score first, each
     with its fingerprint, status="kept", and lane / lane_name / lane_reason.
     Lane-0 survivors (low score, no referral) stay in the queue, flagged, so
@@ -88,17 +89,20 @@ def build_queue(
                           "failed_gate": gate.failed_gate, "reason": gate.reason,
                           "status": "gated"})
             continue
-        decision = assign_lane(gate, row["score"], as_bool(posting.get("referral"), False))
+        referral = as_bool(posting.get("referral"), False)
+        decision = assign_lane(gate, row["score"], referral)
         eligible.append({**row, "lane": decision.lane, "lane_name": decision.name,
-                         "lane_reason": decision.reason,
+                         "lane_reason": decision.reason, "referral": referral,
                          "min_years_experience": int(posting.get("min_years_experience") or 0)})
     scored = eligible
 
-    # Within-batch dedup: strictly-greater comparison keeps the first row on ties.
+    # Within-batch dedup: a referral row beats any non-referral repost (it
+    # bypasses the keyword screen), then higher score wins. Strictly-greater
+    # comparison keeps the first row on ties.
     best: dict[str, dict] = {}
     for row in scored:
         cur = best.get(row["fingerprint"])
-        if cur is None or row["score"] > cur["score"]:
+        if cur is None or (row["referral"], row["score"]) > (cur["referral"], cur["score"]):
             best[row["fingerprint"]] = row
     queue = [r for r in scored if best[r["fingerprint"]] is r]
     duplicates = [{"company": r["company"], "title": r["title"], "url": r["url"],

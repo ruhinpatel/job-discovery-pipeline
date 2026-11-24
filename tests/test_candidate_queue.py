@@ -228,3 +228,23 @@ def test_queue_rows_carry_their_own_stated_years(tmp_path: Path):
     ])
     result = build_queue(postings, _decision_profile(tmp_path), tmp_path / "missing.csv")
     assert {r["company"]: r["min_years_experience"] for r in result["queue"]} == {"A Co": 1, "B Co": 2}
+
+
+def test_referral_row_beats_higher_scoring_nonreferral_repost(tmp_path: Path):
+    postings = _write_postings(tmp_path, [
+        "Dup Co,Software Engineer,https://a.example.test/1,Python Python,0,Remote - US,True,False,False",
+        "Dup Co,Software Engineer,https://b.example.test/2,Nothing relevant,0,Remote - US,True,False,True",
+    ])
+    result = build_queue(postings, _decision_profile(tmp_path), tmp_path / "missing.csv")
+    assert [r["url"] for r in result["queue"]] == ["https://b.example.test/2"]
+    assert result["queue"][0]["lane"] == 1
+    assert [d["url"] for d in result["duplicates"]] == ["https://a.example.test/1"]
+
+
+def test_two_referral_reposts_fall_back_to_score(tmp_path: Path):
+    postings = _write_postings(tmp_path, [
+        "Dup Co,Software Engineer,https://a.example.test/1,Nothing relevant,0,Remote - US,True,False,True",
+        "Dup Co,Software Engineer,https://b.example.test/2,Python Python,0,Remote - US,True,False,True",
+    ])
+    result = build_queue(postings, _decision_profile(tmp_path), tmp_path / "missing.csv")
+    assert [r["url"] for r in result["queue"]] == ["https://b.example.test/2"]
