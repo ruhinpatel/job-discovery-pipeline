@@ -14,11 +14,11 @@ Job postings arrive from many sources, and most of them are duplicates, reposts,
 
 ```
 pip install -r requirements.txt
-PYTHONPATH=src python src/pipeline/candidate_queue.py
-PYTHONPATH=src python -m pytest -q
+python src/pipeline/candidate_queue.py
+python -m pytest -q
 ```
 
-`PYTHONPATH=src` is required for the raw-script commands because the package lives under `src/`. Installing it (`pip install .`, or `pip install -e .` while developing) removes that requirement and gives you the `jobpipe` and `jobpipe-ingest` commands.
+The scripts add `src/` to the import path themselves, so no `PYTHONPATH` setup is needed. Installing the package (`pip install .`, or `pip install -e .` while developing) additionally gives you the `jobpipe` and `jobpipe-ingest` commands.
 Real output of the queue command (table trimmed to the first 5 of the 9 queued rows; the full run lists all 9, then the gated-out summary):
 
 ```
@@ -66,7 +66,7 @@ The pipeline orders the work up to the ranked queue; the final gate is a person,
 
 ### Optional: LLM scoring
 
-By default scoring is deterministic and offline. To score with an LLM instead, run `pip install -r requirements-llm.txt` and set `JOBPIPE_LLM=1` plus `ANTHROPIC_API_KEY`; the router's cheap tier is used. Posting text is treated as untrusted data (delimited, with the model told to ignore embedded instructions), and any API or parse failure falls back to the deterministic scorer.
+By default scoring is deterministic and offline. To score with an LLM instead, run `pip install -r requirements-llm.txt` and set `JOBPIPE_LLM=1` plus `ANTHROPIC_API_KEY`. The model is fixed (`DEFAULT_MODEL` in `llm_scorer.py`) unless you set `JOBPIPE_LLM_MODEL`; the router's tier is printed for information but does not pick the model. Posting text is treated as untrusted data (delimited, with the model told to ignore embedded instructions), and any API or parse failure falls back to the deterministic scorer.
 
 ## Source adapters (sources + normalization)
 
@@ -103,7 +103,7 @@ Synthetic fixtures live in `data/`.
 
 ## Decision layer (hard gates + lane routing)
 
-`src/pipeline/gates.py` runs hard eligibility gates before any posting is scored: a minimum years-of-experience floor, work authorization, clearance requirements, and location. A failed gate removes the posting regardless of how well it matches, because the scorer answers how good a fit a role is and the gate answers whether it is eligible at all. Gated postings are reported separately with the gate that removed them and a plain-language reason, so a reviewer can see what was excluded and why.
+`src/pipeline/gates.py` runs hard eligibility gates before any posting is scored: a minimum years-of-experience floor, work authorization, clearance requirements, and location. A failed gate removes the posting regardless of how well it matches, because the scorer answers how good a fit a role is and the gate answers whether it is eligible at all. The CLI prints a per-gate count of what was removed (for example `Gated out: 8 min_yoe`). The row-by-row detail, with the gate that removed each posting and a plain-language reason, lives in the result of `build_queue` and in the dashboard export, not in the CLI output.
 
 `src/pipeline/lanes.py` gives each surviving row a lane that recommends how much effort it earns: SKIP (failed gate, or a score too low to reach the keyword-match threshold with no referral), FAST-APPLY (no tailoring, submit now), QUICK-TAILOR (a short targeted edit in the band where it can realistically cross that threshold), and DEEP-TAILOR (reserved for postings a person picks deliberately, never assigned automatically). A referral routes a row to FAST-APPLY even below the keyword-match threshold, because a referral bypasses the keyword screen entirely. Each lane carries a `model_task` that maps to `router.py`: the lane decides how much effort a row gets, and the router decides which model tier performs that work.
 
@@ -121,7 +121,7 @@ pip install .            # or: pipx install .
 
 This provides `jobpipe` (rank a queue) and `jobpipe-ingest` (regenerate the demo postings). There are no runtime dependencies.
 
-**2. Describe yourself.** Copy `data/profile.example.json` to your own folder and edit it. Every field is used by the gates or the scorer:
+**2. Describe yourself.** Copy `data/profile.example.json` to your own folder and edit it. The gates and the scorer read every field except `name`, which is only a label and is not used:
 
 ```json
 {
@@ -157,6 +157,7 @@ This calls the public, no-auth board API with a generic User-Agent, writes `<dat
 
 - **Greenhouse only.** The other adapters still read synthetic fixtures; there is no live LinkedIn, GitHub-list, or career-page fetching.
 - **Sponsorship is unknown.** Public boards expose no sponsorship flag, so every live row defaults to "sponsorship offered". The work-authorization gate cannot screen live rows; check each posting yourself.
+- **Clearance is always False on live rows.** The live adapter does not read clearance or citizenship requirements from the posting text, so the clearance gate cannot screen live rows either; read each posting for clearance and citizenship language yourself.
 - **Seniority is read from the text, not the title.** The experience gate uses a stated "N years" figure. A Staff or Principal role whose posting states no number reads as 0 years and passes, so senior roles can rank high for an early-career profile.
 - **Fit scoring is keyword overlap**, a stand-in for the LLM scorer, so treat the score as a sort order and not a judgment.
 
