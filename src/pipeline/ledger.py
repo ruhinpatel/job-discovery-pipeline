@@ -23,6 +23,9 @@ RESOLVED_FIELDS = ["fingerprint", "company", "title", "status", "resolved_date",
 # collapsing two distinct roles at one company that have similar titles.
 _NOISE_RE = re.compile(r"\b(20\d{2}|new college grad|new grad|college grad|undergrads?)\b")
 _PUNCT_RE = re.compile(r"[^a-z0-9]+")
+# "C++" and "C#" would otherwise collapse to "C" once punctuation is dropped.
+_CPP_RE = re.compile(r"(?<![a-z0-9])c\+\+")
+_CSHARP_RE = re.compile(r"(?<![a-z0-9])c#")
 
 
 def clean(s: str | None) -> str:
@@ -33,8 +36,11 @@ def clean(s: str | None) -> str:
 
 
 def normalize_fingerprint_part(s: str | None) -> str:
-    """Lowercase, drop year/cohort noise words and punctuation, collapse spaces."""
+    """Lowercase, keep C++/C# as distinct tokens, drop year/cohort noise words
+    and punctuation, collapse spaces."""
     s = (s or "").lower()
+    s = _CPP_RE.sub("cplusplus", s)
+    s = _CSHARP_RE.sub("csharp", s)
     s = _NOISE_RE.sub(" ", s)
     s = _PUNCT_RE.sub(" ", s)
     return " ".join(s.split())

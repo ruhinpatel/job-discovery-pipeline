@@ -77,3 +77,14 @@ def test_upsert_creates_file_and_parent(tmp_path: Path):
     p = tmp_path / "sub" / "ledger.csv"
     upsert_resolved_role("a|b", "A", "B", "reviewed", "https://x.example.test/1", p)
     assert load_resolved_fingerprints(p) == {"a|b"}
+
+
+def test_c_plus_plus_and_c_sharp_stay_distinct_from_each_other_and_from_c():
+    fps = {fingerprint("Acme", t) for t in ("C++ Engineer", "C# Engineer", "C Engineer")}
+    assert len(fps) == 3
+
+
+def test_c_plus_plus_and_c_sharp_inside_longer_titles():
+    assert normalize_fingerprint_part("Senior C++/Python Developer") == "senior cplusplus python developer"
+    assert normalize_fingerprint_part("C#/.NET Engineer") == "csharp net engineer"
+    assert normalize_fingerprint_part("Abc++ Engineer") == "abc engineer"  # not a C++ token
