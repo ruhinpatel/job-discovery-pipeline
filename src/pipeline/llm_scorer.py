@@ -10,6 +10,7 @@ one bad reply never breaks the queue.
 from __future__ import annotations
 
 import json
+import math
 import os
 from typing import Any, Callable, Protocol
 
@@ -24,6 +25,11 @@ API_KEY_ENV = "ANTHROPIC_API_KEY"
 
 _BEGIN = "<<<POSTING_BEGIN>>>"
 _END = "<<<POSTING_END>>>"
+
+
+def _neutralize(text: Any) -> str:
+    """Posting text must not be able to close the fence early."""
+    return str(text).replace(_END, "[POSTING_END]")
 
 
 class LLMClient(Protocol):
@@ -43,9 +49,9 @@ def build_prompt(posting: dict[str, Any], profile: dict[str, Any]) -> str:
         f"Preferred roles: {', '.join(profile.get('role_preferences', []))}\n"
         f"Years of experience range: {profile.get('min_years_experience')} to "
         f"{profile.get('max_years_experience')}\n\n"
-        f"Title: {posting.get('title', '')}\n"
         f"Stated minimum years: {posting.get('min_years_experience', 0)}\n"
-        f"{_BEGIN}\n{posting.get('description', '')}\n{_END}\n\n"
+        f"{_BEGIN}\nTitle: {_neutralize(posting.get('title', ''))}\n"
+        f"{_neutralize(posting.get('description', ''))}\n{_END}\n\n"
         "Reply with STRICT JSON only, no prose, with exactly these fields: "
         '{"score": number 0-100, "skills_overlap": number 0-1, '
         '"role_title_match": number 0-1, "seniority_fit": number 0-1, '
@@ -54,7 +60,10 @@ def build_prompt(posting: dict[str, Any], profile: dict[str, Any]) -> str:
 
 
 def _clamp(value: Any, lo: float, hi: float) -> float:
-    return max(lo, min(hi, float(value)))
+    number = float(value)
+    if not math.isfinite(number):
+        raise ValueError(f"non-finite value: {value!r}")
+    return max(lo, min(hi, number))
 
 
 def _parse(reply: str, posting: dict[str, Any]) -> dict[str, Any]:
