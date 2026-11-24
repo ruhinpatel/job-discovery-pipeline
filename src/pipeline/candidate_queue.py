@@ -152,8 +152,14 @@ def main(argv: list[str] | None = None) -> None:
         # Separate file: never overwrite the committed demo snapshot.
         postings = write_postings(GreenhouseLiveAdapter(args.live_greenhouse).run(),
                                   data_dir / "postings_live.csv")
-    print(format_queue(build_queue(postings, config.profile_path(data_dir, args.profile),
-                                   config.ledger_path(data_dir))))
+    profile = config.profile_path(data_dir, args.profile)
+    missing = [p for p in (postings, profile) if not Path(p).exists()]
+    if missing:
+        sys.exit("Missing input: " + ", ".join(str(p) for p in missing) + "\n"
+                 "Point --data-dir at a folder with postings.csv and profile.json "
+                 "(copy data/profile.example.json to start), or fetch real postings "
+                 "with --live-greenhouse <board-token>.")
+    print(format_queue(build_queue(postings, profile, config.ledger_path(data_dir))))
 
 
 if __name__ == "__main__":

@@ -72,3 +72,11 @@ def test_live_greenhouse_flag_writes_separate_file_and_leaves_demo(tmp_path, cap
     assert "1 postings" in capsys.readouterr().out
     assert (copy / "postings_live.csv").exists()
     assert (copy / "postings.csv").read_text(encoding="utf-8") == before
+
+
+def test_missing_inputs_give_clear_message_not_traceback(tmp_path):
+    import pytest
+    with pytest.raises(SystemExit) as exc:
+        queue_main(["--data-dir", str(tmp_path)])
+    msg = str(exc.value)
+    assert "Missing input" in msg and "--live-greenhouse" in msg

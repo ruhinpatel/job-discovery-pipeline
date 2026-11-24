@@ -1,0 +1,26 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "job-discovery-pipeline"
+version = "0.1.0"
+description = "Collect, dedupe, gate, score and rank job postings into a short queue for human review."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+dependencies = []  # stdlib only
+
+[project.optional-dependencies]
+llm = ["anthropic>=0.40.0"]
+dev = ["pytest>=8.0"]
+
+[project.scripts]
+jobpipe = "pipeline.candidate_queue:main"
+jobpipe-ingest = "pipeline.adapters.ingest:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]

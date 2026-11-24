@@ -12,7 +12,10 @@ from pathlib import Path
 
 # src/pipeline/config.py -> repo root is two levels up from this file's folder.
 REPO_ROOT = Path(__file__).resolve().parents[2]
-DEFAULT_DATA_DIR = REPO_ROOT / "data"
+# In a source checkout the demo data sits next to src/. When pip-installed there
+# is no such folder, so fall back to ./data in the user's working directory.
+_REPO_DATA = REPO_ROOT / "data"
+DEFAULT_DATA_DIR = _REPO_DATA if (_REPO_DATA / "profile.json").exists() else Path.cwd() / "data"
 
 ENV_DATA_DIR = "JOBPIPE_DATA_DIR"
 ENV_PROFILE = "JOBPIPE_PROFILE"
