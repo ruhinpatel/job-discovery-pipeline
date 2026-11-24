@@ -157,3 +157,22 @@ def test_missing_decision_fields_default_safely(tmp_path):
         assert row["sponsorship_offered"] is True
         assert row["requires_clearance"] is False
         assert row["referral"] is False
+
+
+def _linkedin_row(snippet: str, seniority: str) -> dict:
+    return {"jobTitle": "Engineer", "companyName": "Acme", "link": "https://x.test/1",
+            "snippet": snippet, "seniority": seniority}
+
+
+def test_linkedin_explicit_zero_years_beats_seniority_floor():
+    rows = LinkedInAlertsAdapter().normalize(
+        [_linkedin_row("0-2 years of experience", "Mid-Senior level")])
+    assert rows[0]["min_years_experience"] == 0
+
+
+def test_linkedin_seniority_floor_only_when_snippet_states_nothing():
+    rows = LinkedInAlertsAdapter().normalize([
+        _linkedin_row("Great team, great perks.", "Mid-Senior level"),
+        _linkedin_row("Great team, great perks.", "Entry level"),
+    ])
+    assert [r["min_years_experience"] for r in rows] == [4, 0]
