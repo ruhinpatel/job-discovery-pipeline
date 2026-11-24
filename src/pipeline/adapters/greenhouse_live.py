@@ -30,7 +30,8 @@ from typing import Any, Callable
 from pipeline.adapters.job_boards import JobBoardsAdapter
 
 API_URL = "https://boards-api.greenhouse.io/v1/boards/{token}/jobs?content=true"
-USER_AGENT = "job-discovery-pipeline/0.1"
+BOARD_URL = "https://boards-api.greenhouse.io/v1/boards/{token}"
+USER_AGENT ="job-discovery-pipeline/0.1"
 
 _TAG_RE = re.compile(r"<[^>]+>")
 _WS_RE = re.compile(r"\s+")
@@ -74,16 +75,32 @@ class GreenhouseLiveAdapter(JobBoardsAdapter):
         with urllib.request.urlopen(self.build_request(url), timeout=self.timeout) as resp:
             return resp.read().decode("utf-8")
 
-    def _reshape(self, job: dict, token: str) -> dict:
+    def _company_name(self, token: str) -> str:
+        """Explicit display_names override > board metadata `name` > the token.
+
+        The real name matters beyond looks: the ledger fingerprint does not join
+        words, so token "tidewatersoftware" would never match "Tidewater Software".
+        """
+        if token in self.display_names:
+            return self.display_names[token]
+        try:
+            name = json.loads(self._get(BOARD_URL.format(token=token))).get("name")
+            if isinstance(name, str) and name.strip():
+                return name.strip()
+        except Exception:
+            pass  # metadata is best-effort; fall back to the token
+        return token
+
+    def _reshape(self, job: dict, company: str) -> dict:
         # Reconcile real-vs-fixture differences here, not in normalize():
-        #  - company is not on the job; the board token identifies it
+        #  - company is not on the job; the board metadata (or token) supplies it
         #  - location is nested {"name": ...} on real boards, flat in the fixture
         #  - content is escaped HTML
         loc = job.get("location")
         location = loc.get("name", "") if isinstance(loc, dict) else (loc or "")
         return {
             "title": job.get("title") or "",
-            "company": {"name": self.display_names.get(token, token)},
+            "company": {"name": company},
             "absolute_url": job.get("absolute_url") or "",
             "content": clean_content(job.get("content", "")),
             "location": location,
@@ -98,5 +115,6 @@ class GreenhouseLiveAdapter(JobBoardsAdapter):
             except Exception:
                 # A live source being down must not take the pipeline down.
                 continue
-            out.extend(self._reshape(j, token) for j in jobs)
+            company = self._company_name(token)
+            out.extend(self._reshape(j, company) for j in jobs)
         return out

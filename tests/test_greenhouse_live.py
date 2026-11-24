@@ -80,3 +80,33 @@ def test_failing_board_is_skipped_others_still_return():
 
 def test_not_registered_in_default_adapters():
     assert GreenhouseLiveAdapter not in ALL_ADAPTERS
+
+
+def _meta_get(name_payload, jobs=SAMPLE):
+    def get(url):
+        if url.endswith("/jobs?content=true"):
+            return json.dumps(jobs)
+        return name_payload() if callable(name_payload) else name_payload
+    return get
+
+
+def test_company_name_comes_from_board_metadata():
+    rows = GreenhouseLiveAdapter(["tidewatersoftware"],
+                                 get=_meta_get('{"name": "Tidewater Software", "content": ""}')).run()
+    assert {r["company"] for r in rows} == {"Tidewater Software"}
+
+
+def test_display_names_override_beats_metadata():
+    rows = GreenhouseLiveAdapter(["acme"], display_names={"acme": "Override Inc"},
+                                 get=_meta_get('{"name": "Metadata Name"}')).run()
+    assert {r["company"] for r in rows} == {"Override Inc"}
+
+
+def test_metadata_failure_falls_back_to_token():
+    def boom():
+        raise OSError("404")
+    rows = GreenhouseLiveAdapter(["acme"], get=_meta_get(boom)).run()
+    assert len(rows) == 2 and {r["company"] for r in rows} == {"acme"}
+    # blank / non-string name also falls back
+    rows = GreenhouseLiveAdapter(["acme"], get=_meta_get('{"name": "  "}')).run()
+    assert {r["company"] for r in rows} == {"acme"}

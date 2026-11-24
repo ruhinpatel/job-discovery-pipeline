@@ -73,3 +73,19 @@ def test_csv_string_booleans_are_understood():
     assert check_gates(_posting(sponsorship_offered="False"), PROFILE).failed_gate == "work_authorization"
     assert check_gates(_posting(requires_clearance="True"), PROFILE).failed_gate == "clearance"
     assert check_gates(_posting(sponsorship_offered="", requires_clearance=""), PROFILE).passed
+
+
+def test_multi_location_passes_if_any_part_allowed():
+    # Real Greenhouse shapes: "|" and ";" separators, "New York City" spelling.
+    assert check_gates(_posting(location="London, UK | New York City, NY"), PROFILE).passed
+    assert check_gates(_posting(location="London, UK; Remote - US; Tokyo, Japan"), PROFILE).passed
+    assert check_gates(_posting(location="new york,  ny"), PROFILE).passed  # case/space
+
+
+def test_multi_location_fails_when_no_part_allowed():
+    result = check_gates(_posting(location="London, UK | Tokyo, Japan; Zürich, CH"), PROFILE)
+    assert result.failed_gate == "location"
+
+
+def test_blank_separator_parts_do_not_match_or_crash():
+    assert check_gates(_posting(location=" | ; "), PROFILE).failed_gate == "location"

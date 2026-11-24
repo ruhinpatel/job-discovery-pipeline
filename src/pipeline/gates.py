@@ -25,10 +25,32 @@ postings.csv, where booleans arrive as "True"/"False" strings.
 
 from __future__ import annotations
 
+import re
 from dataclasses import dataclass
 from typing import Any
 
 from pipeline.adapters.base import as_bool
+
+# Multi-location postings join places with "|" or ";" (e.g. Greenhouse).
+_LOCATION_SPLIT_RE = re.compile(r"[|;]")
+# Spelling variants that name the same place; applied after lowercasing.
+_LOCATION_ALIASES = {"new york city, ny": "new york, ny", "new york city": "new york"}
+
+
+def _norm_location(s: str) -> str:
+    s = " ".join(s.lower().split())
+    return _LOCATION_ALIASES.get(s, s)
+
+
+def location_allowed(location: str, allowed: list[str]) -> bool:
+    """True if ANY place in a (possibly multi-location) posting is allowed.
+
+    A posting open in several places is eligible when one of them is, so the
+    gate must not require the whole string to equal one allowed value.
+    """
+    allowed_set = {_norm_location(a) for a in allowed}
+    parts = [_norm_location(p) for p in _LOCATION_SPLIT_RE.split(location) if p.strip()]
+    return any(p in allowed_set for p in parts)
 
 
 @dataclass(frozen=True)
@@ -62,7 +84,7 @@ def check_gates(posting: dict[str, Any], profile: dict[str, Any]) -> GateResult:
 
     location = (posting.get("location") or "").strip()
     allowed = profile.get("allowed_locations")
-    if location and allowed is not None and location not in allowed:
+    if location and allowed is not None and not location_allowed(location, allowed):
         return _fail("location", f"location {location!r} not in candidate's allowed set")
 
     return _PASS
