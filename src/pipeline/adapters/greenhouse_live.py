@@ -36,15 +36,22 @@ USER_AGENT ="job-discovery-pipeline/0.1"
 # Well-formed tags only (</?name ...>): a stray "<" in prose ("latency < 100ms")
 # must not swallow the text up to the next real tag.
 _TAG_RE = re.compile(r"</?[a-zA-Z][^>]*>")
-_WS_RE = re.compile(r"\s+")
+# Block-level tags end a line, so list items without periods stay separate
+# sentences for the experience parser (see base.find_min_years).
+_BLOCK_RE = re.compile(r"</?(?:p|li|ul|ol|div|br|tr|table|section|h[1-6])\b[^>]*>", re.IGNORECASE)
 
 
 def clean_content(raw: str) -> str:
-    """Real `content` is HTML-escaped HTML: unescape, strip tags, collapse space."""
+    """Real `content` is HTML-escaped HTML: unescape, strip tags, collapse space.
+
+    Block-level tags become line breaks: one line per paragraph or list item.
+    """
     text = html.unescape(raw or "")  # pass 1: "&lt;p&gt;" -> "<p>"
+    text = _BLOCK_RE.sub("\n", text)
     text = _TAG_RE.sub(" ", text)
     # pass 2: entities in the text itself ("&amp;amp;" -> "&amp;" -> "&")
-    return _WS_RE.sub(" ", html.unescape(text)).strip()
+    lines = (" ".join(line.split()) for line in html.unescape(text).split("\n"))
+    return "\n".join(line for line in lines if line)
 
 
 class GreenhouseLiveAdapter(JobBoardsAdapter):

@@ -121,3 +121,19 @@ def test_stray_less_than_does_not_swallow_the_requirement_sentence():
     assert "Requires 5+ years of experience." in text
     assert "latency < 100ms" in text
     assert parse_min_years(text) == 5
+
+
+def test_list_items_without_periods_stay_separate_sentences():
+    # Real postings use <li> bullets with no trailing period. If they collapse
+    # into one long run, a company bullet ("our mission") would make the
+    # requirement bullet look like a company sentence and hide its years.
+    from pipeline.adapters.greenhouse_live import clean_content
+    raw = ("&lt;p&gt;About us&lt;/p&gt;&lt;ul&gt;&lt;li&gt;We build safe systems for our customers&lt;/li&gt;"
+           "&lt;li&gt;Minimum qualifications: 8+ years of experience in sales&lt;/li&gt;&lt;/ul&gt;")
+    payload = {"jobs": [{"title": "Account Executive", "absolute_url": "https://boards.example.test/acme/jobs/9",
+                         "location": {"name": "Remote - US"}, "content": raw}]}
+    rows = GreenhouseLiveAdapter(["acme"], get=lambda url: json.dumps(payload)).run()
+    assert rows[0]["min_years_experience"] == 8
+    cleaned = clean_content(raw)
+    assert "<" not in cleaned
+    assert "We build safe systems for our customers" in cleaned
