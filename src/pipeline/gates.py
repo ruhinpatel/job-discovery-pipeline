@@ -37,8 +37,16 @@ _LOCATION_SPLIT_RE = re.compile(r"[|;]")
 _LOCATION_ALIASES = {"new york city, ny": "new york, ny", "new york city": "new york"}
 
 
+# Trailing noise that does not change the place: "(Hybrid)", "(US)", ", USA".
+_LOCATION_SUFFIX_RE = re.compile(r"\s*\((?:hybrid|us)\)\s*$|\s*,\s*usa\s*$")
+
+
 def _norm_location(s: str) -> str:
     s = " ".join(s.lower().split())
+    prev = None
+    while prev != s:
+        prev = s
+        s = _LOCATION_SUFFIX_RE.sub("", s).strip()
     return _LOCATION_ALIASES.get(s, s)
 
 
@@ -47,7 +55,10 @@ def location_allowed(location: str, allowed: list[str]) -> bool:
 
     A posting open in several places is eligible when one of them is, so the
     gate must not require the whole string to equal one allowed value.
+    An empty `allowed` list means no restriction.
     """
+    if not allowed:
+        return True
     allowed_set = {_norm_location(a) for a in allowed}
     parts = [_norm_location(p) for p in _LOCATION_SPLIT_RE.split(location) if p.strip()]
     return any(p in allowed_set for p in parts)

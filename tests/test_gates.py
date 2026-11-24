@@ -89,3 +89,20 @@ def test_multi_location_fails_when_no_part_allowed():
 
 def test_blank_separator_parts_do_not_match_or_crash():
     assert check_gates(_posting(location=" | ; "), PROFILE).failed_gate == "location"
+
+
+def test_empty_allowed_locations_means_no_restriction():
+    profile = {**PROFILE, "allowed_locations": []}
+    assert check_gates(_posting(location="London, UK"), profile).passed
+
+
+def test_trailing_hybrid_us_and_usa_are_ignored_when_matching():
+    assert check_gates(_posting(location="New York, NY (Hybrid)"), PROFILE).passed
+    assert check_gates(_posting(location="New York, NY (US)"), PROFILE).passed
+    assert check_gates(_posting(location="New York, NY, USA"), PROFILE).passed
+    assert check_gates(_posting(location="London, UK | New York, NY, USA"), PROFILE).passed
+
+
+def test_location_suffix_stripping_does_not_make_other_places_eligible():
+    assert check_gates(_posting(location="London, UK (Hybrid)"), PROFILE).failed_gate == "location"
+    assert check_gates(_posting(location="Boston, MA, USA"), PROFILE).failed_gate == "location"
