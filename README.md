@@ -170,4 +170,4 @@ pip install -e ".[dev]"
 python -m pytest -q
 ```
 
-
+Found a bug or have a feature idea? [Open an issue](https://github.com/ruhinpatel/job-discovery-pipeline/issues).
