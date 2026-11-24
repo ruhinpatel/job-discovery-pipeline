@@ -159,6 +159,8 @@ This calls the public, no-auth board API with a generic User-Agent, writes `<dat
 - **Sponsorship is unknown.** Public boards expose no sponsorship flag, so every live row defaults to "sponsorship offered". The work-authorization gate cannot screen live rows; check each posting yourself.
 - **Clearance is always False on live rows.** The live adapter does not read clearance or citizenship requirements from the posting text, so the clearance gate cannot screen live rows either; read each posting for clearance and citizenship language yourself.
 - **Seniority is read from the text, not the title.** The experience gate uses a stated "N years" figure. A Staff or Principal role whose posting states no number reads as 0 years and passes, so senior roles can rank high for an early-career profile.
+- **The years parser is a heuristic** and misses unusual phrasings. It reads each sentence on its own, skips company sentences and time windows ("within 1 year"), and handles spelled numbers and ranges, but a requirement worded outside those patterns can be missed or misread.
+- **A posting that states no number reads as unknown**, which passes the experience gate (the gate treats unknown as eligible). Unknown is not the same as entry-level.
 - **Fit scoring is keyword overlap**, a stand-in for the LLM scorer, so treat the score as a sort order and not a judgment.
 
 ## Running the tests
