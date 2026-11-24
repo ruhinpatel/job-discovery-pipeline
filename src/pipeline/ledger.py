@@ -48,7 +48,7 @@ def fingerprint(company: str, title: str) -> str:
 def _read_rows(path: Path) -> list[dict[str, str]]:
     if not path.exists():
         return []
-    with open(path, newline="", encoding="utf-8") as f:
+    with open(path, newline="", encoding="utf-8-sig") as f:
         return list(csv.DictReader(f))
 
 

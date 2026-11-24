@@ -31,11 +31,11 @@ _WORD_RE = re.compile(r"[a-z0-9+]+")
 
 
 def load_profile(path: Path = DEFAULT_PROFILE_PATH) -> dict[str, Any]:
-    return json.loads(Path(path).read_text(encoding="utf-8"))
+    return json.loads(Path(path).read_text(encoding="utf-8-sig"))
 
 
 def load_postings(path: Path = DEFAULT_POSTINGS_PATH) -> list[dict[str, str]]:
-    with open(path, newline="", encoding="utf-8") as f:
+    with open(path, newline="", encoding="utf-8-sig") as f:
         return list(csv.DictReader(f))
 
 
