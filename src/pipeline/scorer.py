@@ -14,8 +14,10 @@ import re
 from pathlib import Path
 from typing import Any
 
-DEFAULT_PROFILE_PATH = Path("data/profile.json")
-DEFAULT_POSTINGS_PATH = Path("data/postings.csv")
+from pipeline import config
+
+DEFAULT_PROFILE_PATH = config.DEFAULT_DATA_DIR / "profile.json"
+DEFAULT_POSTINGS_PATH = config.postings_path(config.DEFAULT_DATA_DIR)
 
 # Weights sum to 1.0. skills_overlap carries the most weight because it is the
 # rubric's main signal; role_title_match and seniority_fit are coarse gates.

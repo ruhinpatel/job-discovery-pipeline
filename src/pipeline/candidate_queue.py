@@ -12,6 +12,7 @@ can see how much work each stage removed.
 
 from __future__ import annotations
 
+import argparse
 import sys
 from pathlib import Path
 
@@ -20,7 +21,10 @@ if __name__ == "__main__":
     # `pipeline` package is not importable. Add src/ (tests get it from conftest.py).
     sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
+from pipeline import config
 from pipeline.adapters.base import as_bool
+from pipeline.adapters.greenhouse_live import GreenhouseLiveAdapter
+from pipeline.adapters.ingest import write_postings
 from pipeline.gates import check_gates
 from pipeline.lanes import assign_lane
 from pipeline.llm_scorer import get_scorer
@@ -132,8 +136,24 @@ def format_queue(result: dict) -> str:
     return "\n".join(lines)
 
 
-def main() -> None:
-    print(format_queue(build_queue()))
+def main(argv: list[str] | None = None) -> None:
+    parser = argparse.ArgumentParser(description="Rank job postings into a reviewable queue.")
+    parser.add_argument("--data-dir", help="data directory (default: $JOBPIPE_DATA_DIR or repo data/)")
+    parser.add_argument("--profile", help="profile JSON (default: $JOBPIPE_PROFILE or <data-dir>/profile.json)")
+    parser.add_argument("--live-greenhouse", nargs="+", metavar="TOKEN",
+                        help="LIVE: fetch these public Greenhouse boards over the network, "
+                             "write <data-dir>/postings_live.csv, and rank that instead of "
+                             "the synthetic demo postings")
+    args = parser.parse_args(argv)
+
+    data_dir = config.resolve_data_dir(args.data_dir)
+    postings = config.postings_path(data_dir)
+    if args.live_greenhouse:
+        # Separate file: never overwrite the committed demo snapshot.
+        postings = write_postings(GreenhouseLiveAdapter(args.live_greenhouse).run(),
+                                  data_dir / "postings_live.csv")
+    print(format_queue(build_queue(postings, config.profile_path(data_dir, args.profile),
+                                   config.ledger_path(data_dir))))
 
 
 if __name__ == "__main__":

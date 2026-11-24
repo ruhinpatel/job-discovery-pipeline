@@ -13,7 +13,9 @@ import sys
 from datetime import datetime, timezone
 from pathlib import Path
 
-DEFAULT_LEDGER_PATH = Path("data/resolved_roles.csv")
+from pipeline import config
+
+DEFAULT_LEDGER_PATH = config.ledger_path(config.DEFAULT_DATA_DIR)
 
 RESOLVED_FIELDS = ["fingerprint", "company", "title", "status", "resolved_date", "url"]
 

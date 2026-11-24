@@ -15,6 +15,7 @@ single origin of the demo data and every downstream count reconciles to them.
 
 from __future__ import annotations
 
+import argparse
 import csv
 import sys
 from pathlib import Path
@@ -23,6 +24,7 @@ if __name__ == "__main__":
     # Direct script run puts src/pipeline/adapters/ on sys.path, not src/.
     sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
+from pipeline import config
 from pipeline.adapters.base import CANONICAL_KEYS, SourceAdapter
 from pipeline.adapters.company_careers import CompanyCareersAdapter
 from pipeline.adapters.github_lists import GithubListsAdapter
@@ -45,7 +47,7 @@ def run_all_adapters(raw_dir: Path | None = None) -> list[dict]:
     return postings
 
 
-DEFAULT_POSTINGS_PATH = Path(__file__).resolve().parents[3] / "data" / "postings.csv"
+DEFAULT_POSTINGS_PATH = config.postings_path(config.DEFAULT_DATA_DIR)
 
 
 def build_postings(raw_dir: Path | None = None, out_path: Path | None = None) -> list[dict]:
@@ -58,26 +60,39 @@ def build_postings(raw_dir: Path | None = None, out_path: Path | None = None) ->
     work to show.
     """
     postings = run_all_adapters(raw_dir)
+    write_postings(postings, out_path)
+    return postings
+
+
+def write_postings(postings: list[dict], out_path: Path | None = None) -> Path:
+    """Write canonical postings to a CSV (LF endings, canonical column order)."""
     out_path = Path(out_path) if out_path else DEFAULT_POSTINGS_PATH
     out_path.parent.mkdir(parents=True, exist_ok=True)
     with open(out_path, "w", newline="", encoding="utf-8") as f:
         w = csv.DictWriter(f, fieldnames=CANONICAL_KEYS, lineterminator="\n")
         w.writeheader()
         w.writerows(postings)
-    return postings
+    return out_path
 
 
-def main() -> None:
+def main(argv: list[str] | None = None) -> None:
+    parser = argparse.ArgumentParser(description="Run the synthetic-fixture adapters.")
+    parser.add_argument("--data-dir", help="data directory (default: $JOBPIPE_DATA_DIR or repo data/)")
+    parser.add_argument("--write", action="store_true", help="regenerate <data-dir>/postings.csv")
+    args = parser.parse_args(argv)
+    data_dir = config.resolve_data_dir(args.data_dir)
+    raw = config.raw_dir(data_dir)
     total = 0
     for cls in ALL_ADAPTERS:
-        adapter = cls()
+        adapter = cls(raw)
         n = len(adapter.run())
         total += n
         print(f"{adapter.source_name}: {n}")
     print(f"total: {total}")
-    if "--write" in sys.argv[1:]:
-        build_postings()
-        print(f"wrote {DEFAULT_POSTINGS_PATH}")
+    if args.write:
+        out = config.postings_path(data_dir)
+        build_postings(raw, out)
+        print(f"wrote {out}")
 
 
 if __name__ == "__main__":

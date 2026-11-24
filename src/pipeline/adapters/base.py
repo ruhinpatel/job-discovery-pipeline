@@ -36,8 +36,9 @@ from typing import Any
 CANONICAL_KEYS = ("company", "title", "url", "description", "min_years_experience",
                   "location", "sponsorship_offered", "requires_clearance", "referral")
 
-# Repo root is three levels up from this file (src/pipeline/adapters/base.py).
-DEFAULT_RAW_DIR = Path(__file__).resolve().parents[3] / "data" / "raw"
+from pipeline import config
+
+DEFAULT_RAW_DIR = config.raw_dir(config.DEFAULT_DATA_DIR)
 
 # "2+ years", "3 yrs", "at least 4 years" -> the number before "year(s)/yr(s)".
 _YEARS_RE = re.compile(r"(\d+)\s*\+?\s*(?:years?|yrs?)\b", re.IGNORECASE)

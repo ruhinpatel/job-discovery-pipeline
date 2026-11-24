@@ -1,0 +1,29 @@
+{
+  "name": "Jordan Rivera",
+  "role_preferences": [
+    "Software Engineer",
+    "Backend Engineer",
+    "Platform Engineer"
+  ],
+  "skills": [
+    "Python",
+    "Go",
+    "SQL",
+    "AWS",
+    "Kubernetes",
+    "REST APIs",
+    "Git",
+    "distributed systems",
+    "CI/CD"
+  ],
+  "min_years_experience": 0,
+  "max_years_experience": 2,
+  "allowed_locations": [
+    "Remote - US",
+    "New York, NY",
+    "San Francisco, CA",
+    "Seattle, WA"
+  ],
+  "needs_sponsorship": true,
+  "can_obtain_clearance": false
+}
