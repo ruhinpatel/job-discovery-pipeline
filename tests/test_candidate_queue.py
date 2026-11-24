@@ -194,3 +194,37 @@ def test_format_queue_shows_lane_column_and_gated_summary(tmp_path: Path):
     ])
     text = format_queue(build_queue(postings, _decision_profile(tmp_path), tmp_path / "missing.csv"))
     assert "Lane" in text and "1 gated" in text and "Gated out: 1 min_yoe" in text
+
+
+def test_empty_urls_do_not_share_gate_data(tmp_path: Path):
+    # Three rows with no URL: each must be gated on its OWN data, not on
+    # whichever row happens to be last.
+    postings = _write_postings(tmp_path, [
+        "Ok Co,Software Engineer,,Python,0,Remote - US,True,False,False",
+        "Senior Co,Software Engineer,,Python,9,Remote - US,True,False,False",
+        "Fine Co,Software Engineer,,Python,0,Remote - US,True,False,False",
+    ])
+    result = build_queue(postings, _decision_profile(tmp_path), tmp_path / "missing.csv")
+    assert sorted(r["company"] for r in result["queue"]) == ["Fine Co", "Ok Co"]
+    assert [g["company"] for g in result["gated"]] == ["Senior Co"]
+    assert result["gated"][0]["failed_gate"] == "min_yoe"
+
+
+def test_duplicate_urls_do_not_share_gate_data(tmp_path: Path):
+    postings = _write_postings(tmp_path, [
+        "Ok Co,Software Engineer,https://same.example.test/1,Python,0,Remote - US,True,False,False",
+        "Far Co,Backend Engineer,https://same.example.test/1,Python,0,London UK,True,False,False",
+    ])
+    result = build_queue(postings, _decision_profile(tmp_path), tmp_path / "missing.csv")
+    assert [r["company"] for r in result["queue"]] == ["Ok Co"]
+    assert [g["company"] for g in result["gated"]] == ["Far Co"]
+    assert result["gated"][0]["failed_gate"] == "location"
+
+
+def test_queue_rows_carry_their_own_stated_years(tmp_path: Path):
+    postings = _write_postings(tmp_path, [
+        "A Co,Software Engineer,https://same.example.test/1,Python,1,Remote - US,True,False,False",
+        "B Co,Platform Engineer,https://same.example.test/1,Python,2,Remote - US,True,False,False",
+    ])
+    result = build_queue(postings, _decision_profile(tmp_path), tmp_path / "missing.csv")
+    assert {r["company"]: r["min_years_experience"] for r in result["queue"]} == {"A Co": 1, "B Co": 2}

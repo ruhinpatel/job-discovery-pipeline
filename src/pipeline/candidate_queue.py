@@ -64,8 +64,9 @@ def build_queue(
     resolved = load_resolved_fingerprints(ledger_path)
     score_fn = get_scorer()
 
-    by_url = {p.get("url", ""): p for p in postings}
-    scored: list[dict] = []
+    # Each scored row travels with its own posting: URLs can repeat or be
+    # empty, so rejoining by URL would gate a row on another row's data.
+    scored: list[tuple[dict, dict]] = []
     suppressed: list[dict] = []
     for p in postings:
         fp = fingerprint(p.get("company", ""), p.get("title", ""))
@@ -74,13 +75,12 @@ def build_queue(
                                "url": p.get("url", ""), "fingerprint": fp,
                                "status": "suppressed"})
         else:
-            scored.append({**score_fn(p, profile), "fingerprint": fp, "status": "kept"})
+            scored.append((p, {**score_fn(p, profile), "fingerprint": fp, "status": "kept"}))
 
     # Decision pass: gates remove ineligible rows; survivors get a lane.
     eligible: list[dict] = []
     gated: list[dict] = []
-    for row in scored:
-        posting = by_url[row["url"]]
+    for posting, row in scored:
         gate = check_gates(posting, profile)
         if not gate.passed:
             gated.append({"company": row["company"], "title": row["title"], "url": row["url"],
@@ -90,7 +90,8 @@ def build_queue(
             continue
         decision = assign_lane(gate, row["score"], as_bool(posting.get("referral"), False))
         eligible.append({**row, "lane": decision.lane, "lane_name": decision.name,
-                         "lane_reason": decision.reason})
+                         "lane_reason": decision.reason,
+                         "min_years_experience": int(posting.get("min_years_experience") or 0)})
     scored = eligible
 
     # Within-batch dedup: strictly-greater comparison keeps the first row on ties.
