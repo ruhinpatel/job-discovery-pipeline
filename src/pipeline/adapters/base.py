@@ -57,9 +57,15 @@ _LABEL_RE = re.compile(rf"\byears?\s+of\s+(?:relevant\s+)?experience\s*:\s*(?P<l
                        re.IGNORECASE)
 
 _SENTENCE_SPLIT_RE = re.compile(r"(?<=[.!?])\s+|\n+")
-# (a) a sentence about the company, not the candidate.
-_COMPANY_RE = re.compile(r"\b(?:we|our|us|company|founded|since|for over|for more than)\b",
-                         re.IGNORECASE)
+# (a) a sentence about the company, not the candidate. Two tiers:
+# hard cues discard the sentence whatever else it says ("for over 20 years we ...").
+_COMPANY_HARD_RE = re.compile(r"\b(?:for over|for more than|since|founded)\b", re.IGNORECASE)
+# Soft cues discard it only when it states no requirement ("Our company is 12
+# years old"), so "We require 5+ years of experience" and "8 years of experience
+# at a public company" keep their figure.
+_COMPANY_SOFT_RE = re.compile(r"\b(?:we|our|us|company)\b", re.IGNORECASE)
+_STATES_REQUIREMENT = ("experience", "required", "requires", "minimum", "qualification",
+                       "proficiency")
 # (b) a time window ("within 1 year"), looked for in the three words before a match.
 _WINDOW_RE = re.compile(r"\b(?:within|after|past|last|every|each|in the next|over the next)\b",
                         re.IGNORECASE)
@@ -79,7 +85,9 @@ def find_min_years(text: str | None) -> int | None:
     """Return the stated minimum years of experience, or None if none is stated.
 
     Heuristic, per sentence. Every "N years" figure is a candidate, except:
-    - sentences about the company (we, our, company, founded, since, ...), and
+    - sentences about the company: always when they say "for over", "for more
+      than", "since" or "founded"; when they say we/our/us/company only if
+      they state no requirement (experience, required, minimum, ...); and
     - time windows ("within 1 year", "over the next 4 years").
     Of the rest, figures in a sentence that talks about requirements
     (experience, required, minimum, ...) win; the smallest is returned, since
@@ -90,9 +98,13 @@ def find_min_years(text: str | None) -> int | None:
     required: list[int] = []
     other: list[int] = []
     for sentence in _SENTENCE_SPLIT_RE.split(text or ""):
-        if not sentence.strip() or _COMPANY_RE.search(sentence):
+        if not sentence.strip() or _COMPANY_HARD_RE.search(sentence):
             continue
-        is_requirement = any(w in sentence.lower() for w in _REQUIREMENT_WORDS)
+        lowered = sentence.lower()
+        if (_COMPANY_SOFT_RE.search(sentence)
+                and not any(w in lowered for w in _STATES_REQUIREMENT)):
+            continue
+        is_requirement = any(w in lowered for w in _REQUIREMENT_WORDS)
         for regex in (_YEARS_RE, _LABEL_RE):
             for m in regex.finditer(sentence):
                 if _WINDOW_RE.search(" ".join(sentence[:m.start()].split()[-3:])):

@@ -34,6 +34,11 @@ CASES = [
     # company sentences are not requirements
     ("Founded 12 years ago. No other requirement.", None),
     ("We have been shipping since 2009, more than 10 years of growth.", None),
+    # we/our/us/company only discard a sentence that states no requirement
+    ("We require 5+ years of experience.", 5),
+    ("Our team needs 4 years of experience with Go.", 4),
+    ("You have 8 years of legal experience at a public company.", 8),
+    ("Our company is 12 years old.", None),
     # no keyword sentence: smallest remaining wins
     ("2-4 years preferred, 5+ years ideal", 2),
     # a keyworded sentence beats an unkeyworded one
