@@ -40,28 +40,71 @@ from pipeline import config
 
 DEFAULT_RAW_DIR = config.raw_dir(config.DEFAULT_DATA_DIR)
 
-# "2+ years", "3 yrs", "at least 4 years" -> the number before "year(s)/yr(s)".
-_YEARS_RE = re.compile(r"(\d+)\s*\+?\s*(?:years?|yrs?)\b", re.IGNORECASE)
+_WORD_NUMS = {"one": 1, "two": 2, "three": 3, "four": 4, "five": 5,
+              "six": 6, "seven": 7, "eight": 8, "nine": 9, "ten": 10}
+_NUM = r"\d+(?:\.\d+)?|" + "|".join(_WORD_NUMS)
+
+# One "N years" figure. Forms: "3 years", "3+ years", "2 or more years",
+# "three years", "five (5)+ years", "1.5 years", and ranges with -, en dash,
+# em dash or "to" ("3-5 years", "three to five years"): `lo` is the floor.
+_YEARS_RE = re.compile(
+    rf"\b(?P<lo>{_NUM})(?:\s*\((?P<paren>\d+)\))?"
+    rf"(?:\s*(?:[-–—]|\bto\b)\s*(?P<hi>{_NUM}))?"
+    r"\s*(?:\+|or\s+(?:more|greater))?\s*(?:years?|yrs?)\b",
+    re.IGNORECASE)
+# "Years of experience: 4"
+_LABEL_RE = re.compile(rf"\byears?\s+of\s+(?:relevant\s+)?experience\s*:\s*(?P<lo>{_NUM})\b",
+                       re.IGNORECASE)
+
+_SENTENCE_SPLIT_RE = re.compile(r"(?<=[.!?])\s+|\n+")
+# (a) a sentence about the company, not the candidate.
+_COMPANY_RE = re.compile(r"\b(?:we|our|us|company|founded|since|for over|for more than)\b",
+                         re.IGNORECASE)
+# (b) a time window ("within 1 year"), looked for in the three words before a match.
+_WINDOW_RE = re.compile(r"\b(?:within|after|past|last|every|each|in the next|over the next)\b",
+                        re.IGNORECASE)
+# A sentence containing one of these is talking about what the role requires.
+_REQUIREMENT_WORDS = ("experience", "required", "requires", "minimum", "qualification",
+                      "proficiency", "years of")
 
 
-# "0-2 years", "1 to 3 yrs" -> group 1 is the range's floor.
-_RANGE_RE = re.compile(r"(\d+)\s*(?:-|to|–)\s*\d+\s*\+?\s*(?:years?|yrs?)\b", re.IGNORECASE)
+def _years_value(m: re.Match) -> int:
+    if m.groupdict().get("paren"):
+        return int(m.group("paren"))
+    lo = m.group("lo").lower()
+    return _WORD_NUMS[lo] if lo in _WORD_NUMS else int(lo.split(".")[0])
+
+
+def find_min_years(text: str | None) -> int | None:
+    """Return the stated minimum years of experience, or None if none is stated.
+
+    Heuristic, per sentence. Every "N years" figure is a candidate, except:
+    - sentences about the company (we, our, company, founded, since, ...), and
+    - time windows ("within 1 year", "over the next 4 years").
+    Of the rest, figures in a sentence that talks about requirements
+    (experience, required, minimum, ...) win; the smallest is returned, since
+    postings often say "3+ years required, 5+ years preferred" and the floor is
+    what the experience gate cares about. A range "A-B years" counts as A.
+    None (not found) differs from 0 (an explicit "0-2 years").
+    """
+    required: list[int] = []
+    other: list[int] = []
+    for sentence in _SENTENCE_SPLIT_RE.split(text or ""):
+        if not sentence.strip() or _COMPANY_RE.search(sentence):
+            continue
+        is_requirement = any(w in sentence.lower() for w in _REQUIREMENT_WORDS)
+        for regex in (_YEARS_RE, _LABEL_RE):
+            for m in regex.finditer(sentence):
+                if _WINDOW_RE.search(" ".join(sentence[:m.start()].split()[-3:])):
+                    continue
+                (required if is_requirement else other).append(_years_value(m))
+    found = required or other
+    return min(found) if found else None
 
 
 def parse_min_years(text: str) -> int:
-    """Return the smallest 'N years' figure found in free text, else 0.
-
-    An "A-B years" range counts as its floor A (the low end is what gates
-    eligibility), not B.
-
-    Smallest, not first or largest: postings often say "3+ years required,
-    5+ years preferred", and the floor is what the experience gate cares about.
-    """
-    text = text or ""
-    found = [int(m) for m in _RANGE_RE.findall(text)]
-    # Strip ranges before the single-figure pass so "0-2 years" does not also yield 2.
-    found += [int(m) for m in _YEARS_RE.findall(_RANGE_RE.sub(" ", text))]
-    return min(found) if found else 0
+    """Stated minimum years, or 0 when none is found (see find_min_years)."""
+    return find_min_years(text) or 0
 
 
 def as_bool(value: Any, default: bool) -> bool:
